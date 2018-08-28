@@ -52,21 +52,13 @@ public class ApplicationConfig {
 	@Bean
 	public DataSource dataSource() {
 
-		String computerName = null;
-		try {
-			computerName = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String runningEnvironment = System.getenv("TEPPO_ENV");
+		System.out.println(runningEnvironment);
 		String url = "jdbc:postgresql://bb1w1g6xo4mi3ad.c1gsadouzuf9.eu-west-1.rds.amazonaws.com";
-		String port = "5432";
-		if (computerName.contains("saara")) {
+		if (runningEnvironment.equals("local")) {
 			url = "jdbc:postgresql://localhost";
-		} else if (computerName.contains("LTH")) {
-			url = "jdbc:postgresql://localhost";
-			port = "5666";
 		}
+		String port = "5432";
 		DataSource dataSource = DataSourceBuilder.create().url(url + ":"+port+"/pythia")
 				.driverClassName("org.postgresql.Driver").username("pythiaservice").password("pythiaservice").build();
 
