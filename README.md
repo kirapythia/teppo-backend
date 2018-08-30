@@ -17,3 +17,12 @@ TEPPO_ENV environment value is used for selecting which environment is used. Pos
 - test
 - staging
 - prod
+
+## Database setup
+SQL scripts for initializing PostgresSQL database for TEPPO (formerly known as Pythia) are located in database folder.
+
+To initialize the database (with no data):
+* Create a database named as `pythia`
+* Create loggable user `pythiaservice` having password `pythiaservice`
+* Run `pythia.sql` for `pythia` db
+* Run `create_latest_plans_view.sql` for `pythia` db
