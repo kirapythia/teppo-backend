@@ -3,6 +3,7 @@ Microservices-based REST interfaced service for DB storage access (Postgresql an
 Unique Access to the mentioned data storages
 
 ## Importing gradle project to IntelliJ IDEA
+<!-- TODO: Pythia is obsolete, refactor using Teppo instead -->
 - JDK 1.8.0 update 131 is supported
 - Import `pythia_backend` subfolder (having `build.gradle` script) as Gradle project
 - Make sure that `Use auto-import` is checked
@@ -20,9 +21,9 @@ TEPPO_ENV environment value is used for selecting which environment is used. Pos
 
 ## Database setup
 SQL scripts for initializing PostgresSQL database for TEPPO (formerly known as Pythia) are located in database folder.
-
+<!-- TODO: Pythia is obsolete, refactor using Teppo instead -->
 To initialize the database (with no data):
 * Create a database named as `pythia`
-* Create loggable user `pythiaservice` having password `pythiaservice`
+* Create loggable user `pythiaservice` having password `pythiaservice` <!-- TODO: Don't give credentials here -->
 * Run `pythia.sql` for `pythia` db
 * Run `create_latest_plans_view.sql` for `pythia` db
