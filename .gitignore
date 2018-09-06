@@ -1,5 +1,6 @@
 /.project
 bin/
+out/
 # Make build metafiles
 version.json
 .built
