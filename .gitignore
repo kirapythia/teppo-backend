@@ -9,3 +9,4 @@ version.json
 # Gradle build dirs
 .gradle/
 build/
+target/
