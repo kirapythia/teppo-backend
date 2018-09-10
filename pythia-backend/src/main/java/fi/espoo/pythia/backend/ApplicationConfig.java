@@ -53,9 +53,11 @@ public class ApplicationConfig {
 	public DataSource dataSource() {
 
 		String runningEnvironment = System.getenv("TEPPO_ENV");
-		System.out.println(runningEnvironment);
+		// TODO: This url leads to "old" rds, change to Voltti RDS when it is available
 		String url = "jdbc:postgresql://bb1w1g6xo4mi3ad.c1gsadouzuf9.eu-west-1.rds.amazonaws.com";
-		if (runningEnvironment.equals("local")) {
+		// TODO: localhost is now used by default, use Voltti RDS by default when it is available
+		// if (runningEnvironment != null && runningEnvironment.equals("local")) {
+		if (runningEnvironment == null || runningEnvironment.equals("local")) {
 			url = "jdbc:postgresql://localhost";
 		}
 		String port = "5432";
