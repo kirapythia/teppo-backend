@@ -10,6 +10,7 @@ version.json
 # Gradle build dirs
 .gradle/
 build/
+target/
 # Data files
 *.dwg
 *.pdf
