@@ -10,3 +10,7 @@ version.json
 # Gradle build dirs
 .gradle/
 build/
+# Data files
+*.dwg
+*.pdf
+*.svg

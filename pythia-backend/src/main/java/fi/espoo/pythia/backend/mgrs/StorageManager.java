@@ -3,6 +3,7 @@ package fi.espoo.pythia.backend.mgrs;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.attribute.UserPrincipal;
+import java.sql.Time;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,9 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.aioobe.cloudconvert.CloudConvertService;
+import org.aioobe.cloudconvert.ConvertProcess;
+import org.aioobe.cloudconvert.ProcessStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -301,7 +305,8 @@ public class StorageManager {
 			String pdfUrl = "";
 			String xmlUrl = "";
 
-			String savedImageUrl = s3Manager.createPlanMultipartFile("kirapythia-plans-bucket", mfile, version);
+			// TODO: Use the correct (plans) bucket when available
+			String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-static-dev", mfile, version);
 
 			if (name.endsWith(".pdf")) {
 
@@ -343,7 +348,40 @@ public class StorageManager {
 	public PlanValue createUpdatePlan(MultipartFile mfile, long projectId) throws IOException {
 
 		File file = FileConverter.multipartFileToFile(mfile);
-		String name = file.getName();
+        String name = file.getName();
+
+        CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
+        ConvertProcess process;
+        try {
+            process = service.startProcess("dwg", "svg");
+            long startConversion = System.nanoTime();
+            process.startConversion(file);
+
+            ProcessStatus status;
+            waitLoop: while (true) {
+                status = process.getStatus();
+                switch (status.step) {
+                    case FINISHED: {
+                        long endConversion = System.nanoTime();
+                        System.out.println("microseconds elapsed in conversion:" + (endConversion - startConversion));
+                        break waitLoop;
+                    }
+                    case ERROR: throw new RuntimeException(status.message);
+                }
+                Thread.sleep(200);
+            }
+
+            service.download(status.output.url, new File(name + ".svg"));
+            process.delete();
+        } catch (java.net.URISyntaxException e) {
+            System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
+        } catch (java.text.ParseException e) {
+            System.out.println("Error parsing dwg file: " + e.toString());
+        } catch (java.lang.InterruptedException e) {
+            System.out.println("Error in waitLoop: " + e.toString());
+        }
+
+
 		PlanValidator validator = new PlanValidator();
 		short mainNo = 0;
 		short subNo = 0;
@@ -375,7 +413,8 @@ public class StorageManager {
 		boolean maintenanceDuty = false;
 		OffsetDateTime createdAt = null;
 		OffsetDateTime updatedAt = null;
-		String savedImageUrl = s3Manager.createPlanMultipartFile("kirapythia-plans-bucket", mfile, version);
+		// TODO: Use the correct (plans) bucket when available
+		String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-static-dev", mfile, version);
 
 		Plan plan = new Plan();
 

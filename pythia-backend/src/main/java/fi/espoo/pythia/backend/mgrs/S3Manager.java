@@ -46,14 +46,11 @@ public class S3Manager {
 
 		while (it.hasNext()) {
 			Map.Entry pair = (Map.Entry) it.next();
-			if (pair.getKey().equals("S3PUBLIC") || pair.getKey().equals("s3public")) {
+			if (pair.getKey().equals("AWS_ACCESS_KEY_ID")) {
 				publicKey = (String) pair.getValue();
-				System.out.print("publicKey");
-			} else if (pair.getKey().equals("S3PRIVATE") || pair.getKey().equals("s3private")) {
+			} else if (pair.getKey().equals("AWS_SECRET_ACCESS_KEY")) {
 				privateKey = (String) pair.getValue();
-				System.out.print("privateKey");
 			}
-			System.out.println("pair:" + pair.getKey() + ":" + pair.getValue());
 		}
 
 		AWSCredentials credentials = new BasicAWSCredentials(publicKey, privateKey);
@@ -205,7 +202,7 @@ public class S3Manager {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".pdf") || name.endsWith(".dwg") || name.endsWith(".xml") || name.endsWith(".DAT")
 						|| name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif")
-						|| name.endsWith(".tiff");
+						|| name.endsWith(".tiff") || name.endsWith(".dwg");
 
 			}
 		});
