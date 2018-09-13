@@ -296,14 +296,14 @@ public class StorageRestController {
 					short version = 0;
 					if (!planV.getXmlUrl().isEmpty() && fname.endsWith(".pdf")) {
 						// TODO: Use the correct (plans) bucket when available
-						savedImageUrl = s3Manager.createPlanMultipartFile("teppo-static-dev", mfile, version);
+						savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
 						// save to plan -table
 						planV.setPdfUrl(savedImageUrl);
 						// update Plan with url
 						storageManager.updatePlan(planV);
 					} else if (!planV.getPdfUrl().isEmpty() && fname.endsWith(".xml")) {
 						// TODO: Use the correct (plans) bucket when available
-						savedImageUrl = s3Manager.createPlanMultipartFile("teppo-static-dev", mfile, version);
+						savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
 						// save to plan -table
 						planV.setXmlUrl(savedImageUrl);
 						// update Plan with url
@@ -364,7 +364,7 @@ public class StorageRestController {
 			}
 			short version = 0;
 			// TODO: Use the correct (comments) bucket when available
-			String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-static-dev", mfile, version);
+			String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-comments-dev", mfile, version);
 			// set PlanValue url
 			ptextVal.setUrl(savedImageUrl);
 			// update Plan with url
