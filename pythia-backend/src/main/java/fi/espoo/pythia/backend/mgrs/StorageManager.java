@@ -2,6 +2,7 @@ package fi.espoo.pythia.backend.mgrs;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.attribute.UserPrincipal;
 import java.sql.Time;
 import java.time.OffsetDateTime;
@@ -47,6 +48,7 @@ import fi.espoo.pythia.backend.transfer.ProjectUpdateValue;
 import fi.espoo.pythia.backend.transfer.ProjectValue2;
 import fi.espoo.pythia.backend.transfer.PtextValue;
 import fi.espoo.pythia.backend.validators.PlanValidator;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Component
 @Transactional
@@ -367,7 +369,7 @@ public class StorageManager {
                     switch (status.step) {
                         case FINISHED: {
                             long endConversion = System.nanoTime();
-                            System.out.println("milliseconds elapsed in conversion:" + (endConversion - startConversion) / 1000000);
+                            System.out.println("Milliseconds elapsed in conversion:" + (endConversion - startConversion) / 1000000);
                             break waitLoop;
                         }
                         case ERROR: throw new RuntimeException(status.message);
@@ -380,7 +382,7 @@ public class StorageManager {
             } catch (java.net.URISyntaxException e) {
                 System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
             } catch (java.text.ParseException e) {
-                System.out.println("Error parsing dwg file: " + e.toString());
+                System.out.println("Error parsing CAD file: " + e.toString());
             } catch (java.lang.InterruptedException e) {
                 System.out.println("Error in waitLoop: " + e.toString());
             }

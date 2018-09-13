@@ -1,26 +1,19 @@
 package fi.espoo.pythia.backend.mgrs;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -29,184 +22,150 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
 import fi.espoo.pythia.backend.converters.FileConverter;
-import fi.espoo.pythia.backend.encoders.EncoderBase64;
 
 @Component
 public class S3Manager {
 
 
-	public String createPlanMultipartFile(String bucketName, MultipartFile mfile, short version) throws IOException {
+    public String createPlanMultipartFile(String bucketName, MultipartFile mfile, short version) throws IOException {
 
-		String publicKey = "";
-		String privateKey = "";
+        AmazonS3 s3client = this.authenticate();
 
-		Map<String, String> env = System.getenv();
+        File file = FileConverter.multipartFileToFile(mfile);
 
-		Iterator it = env.entrySet().iterator();
+        String fileName = file.getName();
 
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry) it.next();
-			if (pair.getKey().equals("AWS_ACCESS_KEY_ID")) {
-				publicKey = (String) pair.getValue();
-			} else if (pair.getKey().equals("AWS_SECRET_ACCESS_KEY")) {
-				privateKey = (String) pair.getValue();
-			}
-		}
+        int point = fileName.indexOf(".");
 
-		AWSCredentials credentials = new BasicAWSCredentials(publicKey, privateKey);
-		AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.EU_WEST_1).build();
+        String key_start = fileName.substring(0, point);
+        String key_end = fileName.substring(point);
 
-		File file = FileConverter.multipartFileToFile(mfile);
-//
-		String fileName = file.getName();
-		
-		int point = fileName.indexOf(".");
-		
-		String key_start = fileName.substring(0, point);
-		String key_end = fileName.substring(point);
-		
-		String key = key_start+"_"+version+key_end;
-		//String key = file.getName();
-		String url = uploadObject(s3client, file, key, bucketName);
+        String key = key_start+"_"+version+key_end;
+        //String key = file.getName();
+        String url = uploadObject(s3client, file, key, bucketName);
 
-		// UI should not allow but pdf or dwg filetypes.
-		// If you want to add more filetypes modify the method
-		// getFileList(String dirPath)
-		clearFiles();
-		return url;
+        // UI should not allow but pdf or dwg filetypes.
+        // If you want to add more filetypes modify the method
+        // getFileList(String dirPath)
+        clearFiles();
+        return url;
 
-	}
+    }
 
-	// -----------------------AUTHENTICATION WITH ENVIRONMENTAL VARIABLES
+    // -----------------------AUTHENTICATION WITH ENVIRONMENTAL VARIABLES
 
-	public AmazonS3 authenticate() {
-		String publicKey = "";
-		String privateKey = "";
+    public AmazonS3 authenticate() {
+        // Note! the environmental variables are in capitals
+        String envPublicKey = System.getenv("AWS_ACCESS_KEY_ID");
+        String envPrivateKey = System.getenv("AWS_SECRET_ACCESS_KEY");
 
-		Map<String, String> env = System.getenv();
-		Iterator it = env.entrySet().iterator();
+        String publicKey = envPublicKey != null ? envPublicKey : "";
+        String privateKey = envPrivateKey != null ? envPrivateKey : "";
 
-		// Note! the environmental variables are in capitals
-		while (it.hasNext()) {
-			Map.Entry pair = (Map.Entry) it.next();
-			if (pair.getKey().equals("AWS_ACCESS_KEY_ID")) {
-				publicKey = (String) pair.getValue();
-			} else if (pair.getKey().equals("AWS_SECRET_ACCESS_KEY")) {
-				privateKey = (String) pair.getValue();
-			}
+        // First, we need to create a client connection to access Amazon S3 web
+        // service. We’ll use AmazonS3 interface for this purpose:
+        AWSCredentials credentials = new BasicAWSCredentials(publicKey, privateKey);
+        // And then configure the client:
+        // http://docs.aws.amazon.com/general/latest/gr/rande.html
+        // EU Ireland Eu_WEST_1
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.EU_WEST_1).build();
 
-		}
+        return s3client;
+    }
 
-		// First, we need to create a client connection to access Amazon S3 web
-		// service. We’ll use AmazonS3 interface for this purpose:
-		AWSCredentials credentials = new BasicAWSCredentials(publicKey, privateKey);
-		// And then configure the client:
-		// http://docs.aws.amazon.com/general/latest/gr/rande.html
-		// EU Ireland Eu_WEST_1
-		AmazonS3 s3client = AmazonS3ClientBuilder.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.EU_WEST_1).build();
+    // --------------------AMAZON S3 METHODS
+    // ----------------------------------
 
-		return s3client;
-	}
+    /**
+     * upload inputStream to S3 and return the url of the object
+     *
+     * @return
+     */
+    public String uploadObject(AmazonS3 s3client, File file, String key, String bucketName) {
 
-	// --------------------AMAZON S3 METHODS
-	// ----------------------------------
+        s3client.putObject(bucketName, key, file);
+        URL url = s3client.getUrl(bucketName, key);
+        return url.toString();
+    }
 
-	/**
-	 * upload inputStream to S3 and return the url of the object
-	 * 
-	 * @return
-	 */
-	public String uploadObject(AmazonS3 s3client, File file, String key, String bucketName) {
+    @SuppressWarnings("unused")
+    public S3ObjectInputStream downloadObject(AmazonS3 s3client, String downloadFile) {
+        String bucketName = "kirapythia-example-bucket";
+        S3Object s3object = s3client.getObject(bucketName, downloadFile);
+        S3ObjectInputStream inputStream = s3object.getObjectContent();
+        return inputStream;
+    }
 
-		s3client.putObject(bucketName, key, file);
-		URL url = s3client.getUrl(bucketName, key);
-		return url.toString();
-	}
+    @SuppressWarnings("unused")
+    private void listBuckets(AmazonS3 s3client) {
+        List<Bucket> buckets = s3client.listBuckets();
+        for (Bucket bucket : buckets) {
+            System.out.println(bucket.getName());
+        }
+    }
 
-	/**
-	 * 
-	 * @param s3client
-	 * @param uploadFile
-	 * @return
-	 */
-	public S3ObjectInputStream downloadObject(AmazonS3 s3client, String downloadFile) {
-		String bucketName = "kirapythia-example-bucket";
-		S3Object s3object = s3client.getObject(bucketName, downloadFile);
-		S3ObjectInputStream inputStream = s3object.getObjectContent();
-		return inputStream;
-	}
+    @SuppressWarnings("unused")
+    private void createBucket(String bucketName, AmazonS3 s3client) {
 
-	@SuppressWarnings("unused")
-	private void listBuckets(AmazonS3 s3client) {
-		List<Bucket> buckets = s3client.listBuckets();
-		for (Bucket bucket : buckets) {
-			System.out.println(bucket.getName());
-		}
-	}
+        if (s3client.doesBucketExist(bucketName)) {
+            System.out.println("Bucket name is not available." + " Try again with a different Bucket name.");
+            return;
+        }
 
-	@SuppressWarnings("unused")
-	private void createBucket(String bucketName, AmazonS3 s3client) {
+        s3client.createBucket(bucketName);
 
-		if (s3client.doesBucketExist(bucketName)) {
-			System.out.println("Bucket name is not available." + " Try again with a different Bucket name.");
-			return;
-		}
+    }
 
-		s3client.createBucket(bucketName);
+    @SuppressWarnings("unused")
+    private void deleteBucket(AmazonS3 s3client) {
+        // DELETE BUCKET
+        try {
+            s3client.deleteBucket("saara");
+        } catch (AmazonServiceException e) {
+            System.err.println(e.getErrorMessage());
+            return;
+        }
 
-	}
+    }
 
-	@SuppressWarnings("unused")
-	private void deleteBucket(AmazonS3 s3client) {
-		// DELETE BUCKET
-		try {
-			s3client.deleteBucket("saara");
-		} catch (AmazonServiceException e) {
-			System.err.println(e.getErrorMessage());
-			return;
-		}
+    /**
+     * clear temp files pdf, dwg, xml
+     *
+     * @param path
+     */
+    private void clearFiles() {
 
-	}
+        String dirPath = System.getProperty("user.dir");
+        System.out.println(dirPath);
 
-	/**
-	 * clear temp files pdf, dwg, xml
-	 * 
-	 * @param path
-	 */
-	private void clearFiles() {
+        File[] files = getFileList(dirPath);
 
-		String dirPath = System.getProperty("user.dir");
-		System.out.println(dirPath);
+        for (File f : files) {
+            System.out.println(f.getName());
+            try {
+                Files.deleteIfExists(f.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //
+        //
 
-		File[] files = getFileList(dirPath);
+    }
 
-		for (File f : files) {
-			System.out.println(f.getName());
-			try {
-				Files.deleteIfExists(f.toPath());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		//
-		//
+    private static File[] getFileList(String dirPath) {
+        File dir = new File(dirPath);
 
-	}
+        File[] fileList = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".pdf") || name.endsWith(".dwg") || name.endsWith(".xml") || name.endsWith(".DAT")
+                    || name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif") || name.endsWith(".tiff")
+                    || name.endsWith(".svg") || name.endsWith(".dxf");
 
-	private static File[] getFileList(String dirPath) {
-		File dir = new File(dirPath);
-
-		File[] fileList = dir.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".pdf") || name.endsWith(".dwg") || name.endsWith(".xml") || name.endsWith(".DAT")
-						|| name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif")
-						|| name.endsWith(".tiff") || name.endsWith(".dwg");
-
-			}
-		});
-		return fileList;
-	}
+            }
+        });
+        return fileList;
+    }
 
 }

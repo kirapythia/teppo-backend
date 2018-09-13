@@ -217,7 +217,7 @@ public class StorageRestController {
 
 		try {
 		    String fname = mfile.getOriginalFilename();
-			if (fname.endsWith(".pdf") || fname.endsWith(".xml") || fname.endsWith(".dwg")) {
+			if (fname.endsWith(".pdf") || fname.endsWith(".xml") || fname.endsWith(".dwg") || fname.endsWith(".dxf")) {
 				// Value object mapping
 
 				String savedImageUrl = "";

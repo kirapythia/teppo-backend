@@ -13,5 +13,6 @@ build/
 target/
 # Data files
 *.dwg
+*.dxf
 *.pdf
 *.svg
