@@ -2,6 +2,7 @@ package fi.espoo.pythia.backend.mgrs;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -35,21 +36,32 @@ public class S3Manager {
 
         String fileName = file.getName();
 
-        int point = fileName.indexOf(".");
+        int idxDot = fileName.indexOf(".");
 
-        String key_start = fileName.substring(0, point);
-        String key_end = fileName.substring(point);
+        String key_start = fileName.substring(0, idxDot);
+        String key_end = fileName.substring(idxDot);
 
         String key = key_start+"_"+version+key_end;
         //String key = file.getName();
         String url = uploadObject(s3client, file, key, bucketName);
 
-        // UI should not allow but pdf or dwg filetypes.
-        // If you want to add more filetypes modify the method
-        // getFileList(String dirPath)
-        clearFiles();
         return url;
+    }
 
+    public String createPlanInputStream(String bucketName, InputStream inputStream, String fileName, short version) throws IOException {
+
+        AmazonS3 s3client = this.authenticate();
+
+        int idxDot = fileName.indexOf(".");
+
+        String key_start = fileName.substring(0, idxDot);
+        String key_end = fileName.substring(idxDot);
+
+        String key = key_start+"_"+version+key_end;
+        //String key = file.getName();
+        String url = uploadStream(s3client, inputStream, key, bucketName);
+
+        return url;
     }
 
     // -----------------------AUTHENTICATION WITH ENVIRONMENTAL VARIABLES
@@ -85,6 +97,13 @@ public class S3Manager {
     public String uploadObject(AmazonS3 s3client, File file, String key, String bucketName) {
 
         s3client.putObject(bucketName, key, file);
+        URL url = s3client.getUrl(bucketName, key);
+        return url.toString();
+    }
+
+    public String uploadStream(AmazonS3 s3client, InputStream inputStream, String key, String bucketName) {
+
+        s3client.putObject(bucketName, key, inputStream, null);
         URL url = s3client.getUrl(bucketName, key);
         return url.toString();
     }
@@ -127,45 +146,6 @@ public class S3Manager {
             return;
         }
 
-    }
-
-    /**
-     * clear temp files pdf, dwg, xml
-     *
-     * @param path
-     */
-    private void clearFiles() {
-
-        String dirPath = System.getProperty("user.dir");
-        System.out.println(dirPath);
-
-        File[] files = getFileList(dirPath);
-
-        for (File f : files) {
-            System.out.println(f.getName());
-            try {
-                Files.deleteIfExists(f.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        //
-        //
-
-    }
-
-    private static File[] getFileList(String dirPath) {
-        File dir = new File(dirPath);
-
-        File[] fileList = dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".pdf") || name.endsWith(".dwg") || name.endsWith(".xml") || name.endsWith(".DAT")
-                    || name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif") || name.endsWith(".tiff")
-                    || name.endsWith(".svg") || name.endsWith(".dxf");
-
-            }
-        });
-        return fileList;
     }
 
 }

@@ -1,8 +1,10 @@
 package fi.espoo.pythia.backend.mgrs;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.attribute.UserPrincipal;
 import java.sql.Time;
 import java.time.OffsetDateTime;
@@ -352,42 +354,6 @@ public class StorageManager {
         File file = FileConverter.multipartFileToFile(mfile);
         String name = file.getName().toLowerCase();
 
-        // TODO: Move this lower when writing to bucket succeeds
-        if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
-            // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
-            CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
-            ConvertProcess process;
-            try {
-                String inputFormat = name.substring(name.length()-3);
-                process = service.startProcess(inputFormat, "svg");
-                long startConversion = System.nanoTime();
-                process.startConversion(file);
-
-                ProcessStatus status;
-                waitLoop: while (true) {
-                    status = process.getStatus();
-                    switch (status.step) {
-                        case FINISHED: {
-                            long endConversion = System.nanoTime();
-                            System.out.println("Milliseconds elapsed in conversion:" + (endConversion - startConversion) / 1000000);
-                            break waitLoop;
-                        }
-                        case ERROR: throw new RuntimeException(status.message);
-                    }
-                    Thread.sleep(200);
-                }
-
-                service.download(status.output.url, new File(name + ".svg"));
-                process.delete();
-            } catch (java.net.URISyntaxException e) {
-                System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
-            } catch (java.text.ParseException e) {
-                System.out.println("Error parsing CAD file: " + e.toString());
-            } catch (java.lang.InterruptedException e) {
-                System.out.println("Error in waitLoop: " + e.toString());
-            }
-        }
-
         PlanValidator validator = new PlanValidator();
         short mainNo = 0;
         short subNo = 0;
@@ -464,9 +430,51 @@ public class StorageManager {
                 // IF max hasPdf but NO xmlUrl
                 // UPDATE WITH XMLURL
             }
+        } else if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
+            // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
+            CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
+            ConvertProcess process;
+            try {
+                String inputFormat = name.substring(name.length() - 3);
+                process = service.startProcess(inputFormat, "svg");
+                long startConversion = System.nanoTime();
+                process.startConversion(file);
+
+                ProcessStatus conversionStatus;
+                waitLoop:
+                while (true) {
+                    conversionStatus = process.getStatus();
+                    switch (conversionStatus.step) {
+                        case FINISHED: {
+                            long endConversion = System.nanoTime();
+                            System.out.println("Milliseconds elapsed in conversion:" + (endConversion - startConversion) / 1000000);
+                            break waitLoop;
+                        }
+                        case ERROR:
+                            throw new RuntimeException(conversionStatus.message);
+                    }
+                    Thread.sleep(200);
+                }
+
+                InputStream svgStream = service.download(conversionStatus.output.url);
+                String fileName = name + ".svg";
+                service.download(conversionStatus.output.url, new File(fileName));
+                String savedSvgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, version);
+                process.delete();
+            } catch (java.net.URISyntaxException e) {
+                System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
+            } catch (java.text.ParseException e) {
+                System.out.println("Error parsing CAD file: " + e.toString());
+            } catch (java.lang.InterruptedException e) {
+                System.out.println("Error in waitLoop: " + e.toString());
+            }
         } else {
             return null;
         }
+
+        // UI should not allow but pdf or dwg or dxf or xml file types.
+        // If you want to add more file types modify the method getFileList(String dirPath)
+        clearFiles();
 
         Plan savedPlan = planRepository.save(plan);
         PlanValue savedPlanValue = PlanToPlanValueMapper.planToPlanValue(savedPlan, projectUpdate);
@@ -475,6 +483,44 @@ public class StorageManager {
 
     }
 
+    /**
+     * clear temp files pdf, dwg, xml
+     *
+     * @param path
+     */
+    private void clearFiles() {
+
+        String dirPath = System.getProperty("user.dir");
+        System.out.println(dirPath);
+
+        File[] files = getFileList(dirPath);
+
+        for (File f : files) {
+            System.out.println(f.getName());
+            try {
+                Files.deleteIfExists(f.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //
+        //
+
+    }
+
+    private static File[] getFileList(String dirPath) {
+        File dir = new File(dirPath);
+
+        File[] fileList = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".pdf") || name.endsWith(".dwg") || name.endsWith(".xml") || name.endsWith(".DAT")
+                        || name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".gif") || name.endsWith(".tiff")
+                        || name.endsWith(".svg") || name.endsWith(".dxf");
+
+            }
+        });
+        return fileList;
+    }
     /**
      *
      * @param pTextVal
