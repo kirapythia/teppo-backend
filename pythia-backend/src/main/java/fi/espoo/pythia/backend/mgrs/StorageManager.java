@@ -376,7 +376,7 @@ public class StorageManager {
         // max version
         short version = 0;
         Status status = Status.APPROVED;
-        String pdfUrl = "";
+        String url = "";
         String xmlUrl = "";
         UserPrincipal owner = java.nio.file.Files.getOwner(file.toPath());
         String createdBy = owner.toString();
@@ -388,49 +388,15 @@ public class StorageManager {
         // TODO: Use the correct (plans) bucket when available
         String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
 
-        Plan plan = new Plan();
+        Plan plan = null;
 
-        if (name.endsWith(".pdf")) {
-            pdfUrl = savedImageUrl;
-            if (existingPlans.size() == 0) {
-                createdAt = OffsetDateTime.now();
-                plan = new Plan(projectUpdate, new ArrayList<Ptext>(), mainNo, subNo, version, pdfUrl, xmlUrl, status,
-                        createdAt, createdBy, updatedAt, updatedBy, deleted, maintenanceDuty);
-                // CREATE NEW PLAN WITH pdfUrl
-            } else {
-
-                updatedAt = OffsetDateTime.now();
-                Plan max = existingPlans.get(existingPlans.size() - 1);
-                if (!max.getPdfUrl().isEmpty()) {
-                    return null;
-                }
-                max.setPdfUrl(pdfUrl);
-                max.setUpdatedAt(updatedAt);
-                plan = max;
-                // IF max hasXml but NO pdfUrl
-                // UPDATE WITH PDFURL
-            }
-
-        } else if (name.endsWith(".xml")) {
+        if (name.endsWith(".xml")) {
             xmlUrl = savedImageUrl;
-            if (existingPlans.size() == 0) {
-                createdAt = OffsetDateTime.now();
-                plan = new Plan(projectUpdate, new ArrayList<Ptext>(), mainNo, subNo, version, pdfUrl, xmlUrl, status,
-                        createdAt, createdBy, updatedAt, updatedBy, deleted, maintenanceDuty);
-                // CREATE NEW PLAN WITH xmlUrl
-            } else {
-                updatedAt = OffsetDateTime.now();
-                Plan max = existingPlans.get(existingPlans.size() - 1);
-                if (!max.getXmlUrl().isEmpty()) {
-                    return null;
-                }
-                max.setUpdatedAt(updatedAt);
-                max.setXmlUrl(xmlUrl);
-                plan = max;
-                // IF max hasPdf but NO xmlUrl
-                // UPDATE WITH XMLURL
-            }
-        } else if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
+        } else {
+            url = savedImageUrl;
+        }
+
+        if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
             // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
             CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
             ConvertProcess process;
@@ -459,7 +425,7 @@ public class StorageManager {
                 InputStream svgStream = service.download(conversionStatus.output.url);
                 String fileName = name + ".svg";
                 service.download(conversionStatus.output.url, new File(fileName));
-                String savedSvgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, version);
+                url = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, version);
                 process.delete();
             } catch (java.net.URISyntaxException e) {
                 System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
@@ -470,6 +436,29 @@ public class StorageManager {
             }
         } else {
             return null;
+        }
+
+        if (existingPlans.size() == 0) {
+            createdAt = OffsetDateTime.now();
+            plan = new Plan(projectUpdate, new ArrayList<Ptext>(), mainNo, subNo, version, url, xmlUrl, status,
+                    createdAt, createdBy, updatedAt, updatedBy, deleted, maintenanceDuty);
+        } else {
+
+            updatedAt = OffsetDateTime.now();
+            Plan max = existingPlans.get(existingPlans.size() - 1);
+            if (name.endsWith(".xml")) {
+                if (!max.getXmlUrl().isEmpty()) {
+                    return null;
+                }
+                max.setXmlUrl(xmlUrl);
+            } else {
+                if (!max.getPdfUrl().isEmpty()) {
+                    return null;
+                }
+                max.setPdfUrl(url);
+            }
+            max.setUpdatedAt(updatedAt);
+            plan = max;
         }
 
         // UI should not allow but pdf or dwg or dxf or xml file types.
