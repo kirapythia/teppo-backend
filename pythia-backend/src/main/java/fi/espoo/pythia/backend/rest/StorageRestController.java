@@ -216,10 +216,9 @@ public class StorageRestController {
 			@RequestParam(value = "version", required = false) boolean isVersion){
 
 		try {
-		String fname = mfile.getOriginalFilename();
-		if (fname.endsWith(".pdf") || fname.endsWith(".xml")) {
-			// Value object mapping
-			
+		    String fname = mfile.getOriginalFilename();
+			if (fname.endsWith(".pdf") || fname.endsWith(".xml") || fname.endsWith(".dwg") || fname.endsWith(".dxf")) {
+				// Value object mapping
 
 				String savedImageUrl = "";
 				if (isVersion) {
@@ -254,9 +253,9 @@ public class StorageRestController {
 				}
 
 			
-		} else {
-			return new ResponseEntity<PlanValue>(HttpStatus.NOT_ACCEPTABLE);
-		}
+			} else {
+				return new ResponseEntity<PlanValue>(HttpStatus.NOT_ACCEPTABLE);
+			}
 		} catch (org.springframework.transaction.CannotCreateTransactionException e) {
 			return new ResponseEntity<PlanValue>(HttpStatus.FORBIDDEN);
 		}
@@ -296,13 +295,15 @@ public class StorageRestController {
 
 					short version = 0;
 					if (!planV.getXmlUrl().isEmpty() && fname.endsWith(".pdf")) {
-						savedImageUrl = s3Manager.createPlanMultipartFile("kirapythia-plans-bucket", mfile, version);
+						// TODO: Use the correct (plans) bucket when available
+						savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
 						// save to plan -table
 						planV.setPdfUrl(savedImageUrl);
 						// update Plan with url
 						storageManager.updatePlan(planV);
 					} else if (!planV.getPdfUrl().isEmpty() && fname.endsWith(".xml")) {
-						savedImageUrl = s3Manager.createPlanMultipartFile("kirapythia-plans-bucket", mfile, version);
+						// TODO: Use the correct (plans) bucket when available
+						savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
 						// save to plan -table
 						planV.setXmlUrl(savedImageUrl);
 						// update Plan with url
@@ -362,7 +363,8 @@ public class StorageRestController {
 				return new ResponseEntity<PtextValue>(HttpStatus.NOT_FOUND);
 			}
 			short version = 0;
-			String savedImageUrl = s3Manager.createPlanMultipartFile("kirapythia-comments-bucket", mfile, version);
+			// TODO: Use the correct (comments) bucket when available
+			String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-comments-dev", mfile, version);
 			// set PlanValue url
 			ptextVal.setUrl(savedImageUrl);
 			// update Plan with url

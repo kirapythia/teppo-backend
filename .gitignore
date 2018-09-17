@@ -11,3 +11,8 @@ version.json
 .gradle/
 build/
 target/
+# Data files
+*.dwg
+*.dxf
+*.pdf
+*.svg
