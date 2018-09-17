@@ -1,26 +1,21 @@
 package fi.espoo.pythia.backend.mgrs;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.List;
 
+import com.amazonaws.services.s3.model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 
 import fi.espoo.pythia.backend.converters.FileConverter;
 
@@ -44,6 +39,7 @@ public class S3Manager {
         String key = key_start+"_"+version+key_end;
         //String key = file.getName();
         String url = uploadObject(s3client, file, key, bucketName);
+        giveReadPermissionToObject(s3client, bucketName, key);
 
         return url;
     }
@@ -60,6 +56,7 @@ public class S3Manager {
         String key = key_start+"_"+version+key_end;
         //String key = file.getName();
         String url = uploadStream(s3client, inputStream, key, bucketName);
+        giveReadPermissionToObject(s3client, bucketName, key);
 
         return url;
     }
@@ -108,6 +105,21 @@ public class S3Manager {
         return url.toString();
     }
 
+    /**
+     * Give read permission to an object in a bucket (by default everything is private).
+     * TODO: This is not necessary when S3 bucket policy will be implemented to terraform scripts
+     *
+     * @param s3client
+     * @param bucketName
+     * @param key
+     */
+    public void giveReadPermissionToObject(AmazonS3 s3client, String bucketName, String key) {
+        AccessControlList objectAcl = s3client.getObjectAcl(bucketName, key);
+        GroupGrantee allUsers = GroupGrantee.AllUsers;
+        objectAcl.grantPermission(allUsers, Permission.Read);
+        s3client.setObjectAcl(bucketName, key, objectAcl);
+    }
+
     @SuppressWarnings("unused")
     public S3ObjectInputStream downloadObject(AmazonS3 s3client, String downloadFile) {
         String bucketName = "kirapythia-example-bucket";
@@ -123,29 +135,4 @@ public class S3Manager {
             System.out.println(bucket.getName());
         }
     }
-
-    @SuppressWarnings("unused")
-    private void createBucket(String bucketName, AmazonS3 s3client) {
-
-        if (s3client.doesBucketExist(bucketName)) {
-            System.out.println("Bucket name is not available." + " Try again with a different Bucket name.");
-            return;
-        }
-
-        s3client.createBucket(bucketName);
-
-    }
-
-    @SuppressWarnings("unused")
-    private void deleteBucket(AmazonS3 s3client) {
-        // DELETE BUCKET
-        try {
-            s3client.deleteBucket("saara");
-        } catch (AmazonServiceException e) {
-            System.err.println(e.getErrorMessage());
-            return;
-        }
-
-    }
-
 }
