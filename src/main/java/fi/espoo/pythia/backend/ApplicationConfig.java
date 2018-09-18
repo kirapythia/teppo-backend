@@ -60,9 +60,9 @@ public class ApplicationConfig {
 		if (runningEnvironment == null || runningEnvironment.equals("local")) {
 			url = "jdbc:postgresql://localhost";
 		}
-		String port = "5432";
-		DataSource dataSource = DataSourceBuilder.create().url(url + ":"+port+"/pythia")
-				.driverClassName("org.postgresql.Driver").username("pythiaservice").password("pythiaservice").build();
+		String port = "5433";
+		DataSource dataSource = DataSourceBuilder.create().url(url + ":"+port+"/teppo")
+				.driverClassName("org.postgresql.Driver").username("tepposervice").password("tepposervice").build();
 
 		return dataSource;
 	}

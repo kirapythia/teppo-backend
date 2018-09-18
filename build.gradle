@@ -1,29 +1,47 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.7.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-		maven {
+    ext {
+        springBootVersion = '1.5.7.RELEASE'
+        flywayVersion = '5.1.4'
+    }
+    repositories {
+        mavenCentral()
+        maven {
         url 'https://repo.spring.io/libs-release'
     }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-		classpath "io.spring.gradle:dependency-management-plugin:0.4.0.RELEASE"
-	}
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "io.spring.gradle:dependency-management-plugin:0.4.0.RELEASE"
+        classpath("gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:${flywayVersion}")
+    }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: "io.spring.dependency-management"
+apply plugin: 'org.flywaydb.flyway'
+
+// The config below corresponds to nuora-compose's db
+// see 'Overriding order' from https://flywaydb.org/documentation/gradle
+def dbName = 'teppo'
+if (System.env.SPRING_PROFILES_ACTIVE == 'env_local_test') {
+    dbName = 'teppo_test'
+}
+flyway {
+    url = 'jdbc:postgresql://localhost:5433/' + dbName
+    user = 'tepposervice'
+    password = 'tepposervice'
+    placeholders = [
+        'application_user': 'tepposervice'
+    ]
+}
 
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencyManagement {
@@ -44,14 +62,14 @@ tasks.withType(Jar) {
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	
-	compile ('org.springframework.boot:spring-boot-starter-data-jpa')	 
-	compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
-	
-	compile('org.projectlombok:lombok')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    
+    compile ('org.springframework.boot:spring-boot-starter-data-jpa')	 
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
+    
+    compile('org.projectlombok:lombok')
  
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
  
