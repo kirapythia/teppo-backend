@@ -1,15 +1,15 @@
 # Teppo Service's Dockerfile for use in local development
 
 # NOTE: If latest JDK is wanted to be used
-# ARG BASE_IMAGE=307238562370.dkr.ecr.eu-west-1.amazonaws.com/voltti/flyway
+ARG BASE_IMAGE=307238562370.dkr.ecr.eu-west-1.amazonaws.com/voltti/flyway
 # NOTE: There is no guarantee that latest is actually the latest image in the registry. Thus, remember to always
 # override BASE_IMAGE_VERSION with a commit hash in the voltti-dockerfiles repository.
-# ARG BASE_IMAGE_VERSION=latest
+ARG BASE_IMAGE_VERSION=latest
 # Pull Voltti's OpenJDK base image
-# FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
 
 # Never use "latest" as base container but specific tagged version instead
-FROM anapsix/alpine-java:8u131b11_jdk
+#FROM anapsix/alpine-java:8u131b11_jdk
 
 ENV USERNAME voltti
 ENV SOURCE_DIR /usr/src/app

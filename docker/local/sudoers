@@ -1,0 +1,3 @@
+# Supervisor commands
+Cmnd_Alias SUPERVISOR_CMDS = /usr/bin/supervisord
+voltti ALL = PASSWD: ALL, NOPASSWD: SUPERVISOR_CMDS
