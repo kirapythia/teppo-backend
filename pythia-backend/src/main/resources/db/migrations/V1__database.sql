@@ -1,6 +1,3 @@
-CREATE SCHEMA project;
--- ALTER SCHEMA project OWNER TO tepposervice;
-
 CREATE TYPE project.status_enum AS ENUM (
     'WAITING_FOR_REVIEW',
     'WAITING_FOR_REVISION',
@@ -44,7 +41,9 @@ CREATE TABLE project.plan (
     main_no smallint,
     sub_no smallint,
     version smallint,
-    pdf_url character varying,
+    dwg_url character varying,
+    dxf_url character varying,
+    svg_url character varying,
     xml_url character varying,
     status project.status_enum,
     created_at timestamp with time zone,
@@ -83,8 +82,8 @@ CREATE TABLE project.ptext (
     ptext character varying,
     xcoord decimal,
     ycoord decimal,
-    xheight smallint,
-    ywidth smallint
+    xwidth smallint,
+    yheight smallint
 
 );
 
