@@ -13,10 +13,10 @@ if [[ $# -lt 1 ]] || [[ "bootRun"  == *"$1"* ]]; then
         -Djava.security.egd=file:/dev/./urandom \
         -cp "/opt/flyway/lib/*" \
         org.flywaydb.commandline.Main \
-        -locations="filesystem:/usr/src/app/db/migration" \
+        -locations="filesystem:/usr/src/app/src/main/resources/db/migrations" \
         -user="${FLYWAY_USERNAME:-postgres}" \
         -password="${FLYWAY_PASSWORD:-secret}" \
-        -url="${FLYWAY_URL:-jdbc:postgresql://localhost:5433/tepposervice}" \
+        -url="${FLYWAY_URL:-jdbc:postgresql://localhost:5433/teppo}" \
         -baselineOnMigrate=true \
         -placeholders.migration_user="${FLYWAY_PLACEHOLDERS_MIGRATION_USER:-postgres}" \
         -placeholders.application_user="${FLYWAY_PLACEHOLDERS_APPLICATION_USER:-tepposervice}" \

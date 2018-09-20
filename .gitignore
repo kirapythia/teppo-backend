@@ -3,6 +3,7 @@
 build/
 target/
 !gradle/wrapper/gradle-wrapper.jar
+.gradle_user_home/
 
 ### IntelliJ IDEA ###
 .idea
