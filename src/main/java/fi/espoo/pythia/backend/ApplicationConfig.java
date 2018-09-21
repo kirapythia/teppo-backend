@@ -58,7 +58,7 @@ public class ApplicationConfig {
 		// TODO: localhost is now used by default, use Voltti RDS by default when it is available
 		// if (runningEnvironment != null && runningEnvironment.equals("local")) {
 		if (runningEnvironment == null || runningEnvironment.equals("local")) {
-			url = "jdbc:postgresql://teppo-service-db";
+			url = "jdbc:postgresql://localhost";
 		}
 		String port = "5432";
 		String dbUrl = url + ":" + port + "/teppo";

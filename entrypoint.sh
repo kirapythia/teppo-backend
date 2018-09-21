@@ -7,6 +7,8 @@ set -e
 # Start supervisor (and thus gradle's continuous build)
 sudo supervisord -c /etc/supervisord.conf
 
+sleep 5
+
 # if the first argument to `docker run` is bootRun, the user is passing gradle arguments
 if [[ $# -lt 1 ]] || [[ "bootRun"  == *"$1"* ]]; then
     java \

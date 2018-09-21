@@ -1,4 +1,3 @@
-
 CREATE TYPE project.status_enum AS ENUM (
     'WAITING_FOR_REVIEW',
     'WAITING_FOR_REVISION',
@@ -7,7 +6,7 @@ CREATE TYPE project.status_enum AS ENUM (
     'REVERTED'
 );
 
-ALTER TYPE project.status_enum OWNER TO tepposervice;
+-- ALTER TYPE project.status_enum OWNER TO tepposervice;
 
 CREATE TABLE project.project (
     project_id bigint NOT NULL,
@@ -22,7 +21,8 @@ CREATE TABLE project.project (
     updated_by character varying
 );
 
-ALTER TABLE project.project OWNER TO tepposervice;
+
+-- ALTER TABLE project.project OWNER TO tepposervice;
 
 CREATE SEQUENCE project.proj_serial
     START WITH 1
@@ -31,7 +31,9 @@ CREATE SEQUENCE project.proj_serial
     MAXVALUE 2147483647
     CACHE 1;
 
-ALTER TABLE project.proj_serial OWNER TO tepposervice;
+
+-- ALTER TABLE project.proj_serial OWNER TO tepposervice;
+
 
 CREATE TABLE project.plan (
     plan_id bigint NOT NULL,
@@ -39,7 +41,9 @@ CREATE TABLE project.plan (
     main_no smallint,
     sub_no smallint,
     version smallint,
-    pdf_url character varying,
+    dwg_url character varying,
+    dxf_url character varying,
+    svg_url character varying,
     xml_url character varying,
     status project.status_enum,
     created_at timestamp with time zone,
@@ -51,7 +55,8 @@ CREATE TABLE project.plan (
     street_management_decision timestamp with time zone
 );
 
-ALTER TABLE project.plan OWNER TO tepposervice;
+
+-- ALTER TABLE project.plan OWNER TO tepposervice;
 
 CREATE SEQUENCE project.plan_serial
     START WITH 1
@@ -60,7 +65,10 @@ CREATE SEQUENCE project.plan_serial
     MAXVALUE 2147483647
     CACHE 1;
 
-ALTER TABLE project.plan_serial OWNER TO tepposervice;
+
+-- ALTER TABLE project.plan_serial OWNER TO tepposervice;
+
+
 
 CREATE TABLE project.ptext (
     text_id bigint NOT NULL,
@@ -74,12 +82,13 @@ CREATE TABLE project.ptext (
     ptext character varying,
     xcoord decimal,
     ycoord decimal,
-    xheight smallint,
-    ywidth smallint
+    xwidth smallint,
+    yheight smallint
 
 );
 
-ALTER TABLE project.ptext OWNER TO tepposervice;
+
+-- ALTER TABLE project.ptext OWNER TO tepposervice;
 
 CREATE SEQUENCE project.ptex_serial
     START WITH 1
@@ -88,7 +97,8 @@ CREATE SEQUENCE project.ptex_serial
     MAXVALUE 2147483647
     CACHE 1;
 
-ALTER TABLE project.ptex_serial OWNER TO tepposervice;
+
+-- ALTER TABLE project.ptex_serial OWNER TO tepposervice;
 
 CREATE TABLE project.sister_project (
     id bigint NOT NULL,
@@ -96,4 +106,5 @@ CREATE TABLE project.sister_project (
     sister_project_id bigint
 );
 
-ALTER TABLE project.sister_project OWNER TO tepposervice;
+
+-- ALTER TABLE project.sister_project OWNER TO tepposervice;
