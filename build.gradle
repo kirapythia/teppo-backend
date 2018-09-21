@@ -1,5 +1,42 @@
 buildscript {
     ext {
+        awsSdkVersion = '1.11.367'
+        flywayVersion = '5.1.4'
+        gradleVersionsPluginVersion = '0.20.0'
+        javaVersion = '1.8'
+        springBootVersion = '1.5.7.RELEASE'
+
+        libs = [
+                aws_sns               : "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}",
+                aws_sqs               : "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}",
+                postgresql            : "org.postgresql:postgresql",
+                spring_boot_devtools  : "org.springframework.boot:spring-boot-devtools",
+                spring_context        : "org.springframework:spring-context"
+        ]
+
+        starters = [
+                jdbc    : 'org.springframework.boot:spring-boot-starter-jdbc',
+                web     : 'org.springframework.boot:spring-boot-starter-web',
+        ]
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
+    dependencies {
+        classpath "com.github.ben-manes:gradle-versions-plugin:${gradleVersionsPluginVersion}"
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:${flywayVersion}")
+    }
+}
+/*
+buildscript {
+    ext {
         springBootVersion = '1.5.7.RELEASE'
         flywayVersion = '5.1.4'
     }
@@ -12,10 +49,10 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath "io.spring.gradle:dependency-management-plugin:0.4.0.RELEASE"
-        classpath("gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:${flywayVersion}")
+        //classpath("gradle.plugin.com.boxfuse.client:gradle-plugin-publishing:${flywayVersion}")
     }
 }
-
+*/
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
@@ -92,5 +129,3 @@ dependencies {
     compile group: 'org.aioobe.cloudconvert', name: 'client', version: '1.1'
     
 }
-
- 

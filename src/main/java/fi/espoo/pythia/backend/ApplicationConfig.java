@@ -58,10 +58,16 @@ public class ApplicationConfig {
 		// TODO: localhost is now used by default, use Voltti RDS by default when it is available
 		// if (runningEnvironment != null && runningEnvironment.equals("local")) {
 		if (runningEnvironment == null || runningEnvironment.equals("local")) {
-			url = "jdbc:postgresql://localhost";
+			url = "jdbc:postgresql://teppo-service-db";
 		}
-		String port = "5433";
-		DataSource dataSource = DataSourceBuilder.create().url(url + ":"+port+"/teppo")
+		String port = "5432";
+		String dbUrl = url + ":" + port + "/teppo";
+		String dataSourceUrl = System.getenv("SPRING_DATASOURCE_URL");
+		if (dataSourceUrl != null) {
+			dbUrl = dataSourceUrl;
+		}
+		System.out.println("Connecting to " + dbUrl);
+		DataSource dataSource = DataSourceBuilder.create().url(dbUrl)
 				.driverClassName("org.postgresql.Driver").username("tepposervice").password("tepposervice").build();
 
 		return dataSource;
