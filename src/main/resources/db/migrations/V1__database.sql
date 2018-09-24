@@ -44,6 +44,7 @@ CREATE TABLE project.plan (
     dwg_url character varying,
     dxf_url character varying,
     svg_url character varying,
+    pdf_url character varying,
     xml_url character varying,
     status project.status_enum,
     created_at timestamp with time zone,
@@ -109,7 +110,7 @@ CREATE TABLE project.sister_project (
 
 -- ALTER TABLE project.sister_project OWNER TO tepposervice;
 
-CREATE VIEW latest_plans AS
+CREATE VIEW project.latest_plans AS
  SELECT p1.plan_id,
     p1.project_id,
     p1.main_no,
@@ -128,10 +129,10 @@ CREATE VIEW latest_plans AS
    FROM (( SELECT max(p2.version) AS maxversion,
             p2.main_no,
             p2.sub_no
-           FROM plan p2
+           FROM project.plan p2
           WHERE (p2.deleted = false)
           GROUP BY p2.main_no, p2.sub_no) tmp
-     JOIN plan p1 ON (((p1.main_no = tmp.main_no) AND (p1.sub_no = tmp.sub_no) AND (p1.version = tmp.maxversion))))
+     JOIN project.plan p1 ON (((p1.main_no = tmp.main_no) AND (p1.sub_no = tmp.sub_no) AND (p1.version = tmp.maxversion))))
 UNION ALL
  SELECT p1.plan_id,
     p1.project_id,
@@ -151,10 +152,9 @@ UNION ALL
    FROM (( SELECT (max(p2.version) - 1) AS maxversion,
             p2.main_no,
             p2.sub_no
-           FROM plan p2
+           FROM project.plan p2
           WHERE (p2.deleted = false)
           GROUP BY p2.main_no, p2.sub_no) tmp
-     JOIN plan p1 ON (((p1.main_no = tmp.main_no) AND (p1.sub_no = tmp.sub_no) AND (p1.version = tmp.maxversion))));
-
+     JOIN project.plan p1 ON (((p1.main_no = tmp.main_no) AND (p1.sub_no = tmp.sub_no) AND (p1.version = tmp.maxversion))));
 
 -- ALTER TABLE latest_plans OWNER TO pythiaservice;
