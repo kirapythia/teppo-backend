@@ -224,16 +224,20 @@ public class StorageRestController {
 				if (isVersion) {
 					// NEW VERSION
 
-					PlanValue planV1 = storageManager.createPlanVersion(mfile, projectId);
-					// Send e-mail of new version
+					try {
+						PlanValue planV1 = storageManager.createPlanVersion(mfile, projectId);
+						// Send e-mail of new version
 
-					ProjectValue2 p = storageManager.getProject2(planV1.getProjectId());
-					String project = p.getName();
-					String projectSId = p.getProjectId().toString();
-					SESManager sesManager = new SESManager();
-					sesManager.newVersion(project, projectSId, planV1.getPdfUrl(), planV1.getXmlUrl());
+						ProjectValue2 p = storageManager.getProject2(planV1.getProjectId());
+						String project = p.getName();
+						String projectSId = p.getProjectId().toString();
+						SESManager sesManager = new SESManager();
+						sesManager.newVersion(project, projectSId, planV1.getPdfUrl(), planV1.getXmlUrl());
 
-					return new ResponseEntity<PlanValue>(planV1, HttpStatus.OK);
+						return new ResponseEntity<PlanValue>(planV1, HttpStatus.OK);
+					} catch (IOException e) {
+						return new ResponseEntity<PlanValue>(HttpStatus.FORBIDDEN);
+					}
 
 				} else {
 					// NEW PLAN
@@ -242,11 +246,11 @@ public class StorageRestController {
 					try {
 						planV = storageManager.createUpdatePlan(mfile, projectId);
 					
-					if (planV == null) {
-						return new ResponseEntity<PlanValue>(HttpStatus.CONFLICT);
-					}
+						if (planV == null) {
+							return new ResponseEntity<PlanValue>(HttpStatus.CONFLICT);
+						}
 
-					return new ResponseEntity<PlanValue>(planV, HttpStatus.OK);
+						return new ResponseEntity<PlanValue>(planV, HttpStatus.OK);
 					} catch (IOException e) {
 						return new ResponseEntity<PlanValue>(HttpStatus.FORBIDDEN);
 					}

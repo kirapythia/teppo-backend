@@ -265,24 +265,24 @@ public class StorageManager {
         return savedPlanValue;
     }
 
-    /**
-     *
-     * @param mfile
-     * @param projectId
-     * @return
-     */
-    public PlanValue createPlanVersion(MultipartFile mfile, long projectId) {
 
+    private PlanValue initPlanValue(MultipartFile mFile, long projectId, boolean isNewVersion) throws IOException {
+
+        System.out.println("initPlanValue()");
         File file;
-        PlanValue savedPlanValue = new PlanValue();
+        PlanValue planValue = new PlanValue();
+
         try {
-            file = FileConverter.multipartFileToFile(mfile);
-            String name = file.getName();
+            file = FileConverter.multipartFileToFile(mFile);
+            String name = file.getName().toLowerCase();
             PlanValidator validator = new PlanValidator();
-            file = FileConverter.multipartFileToFile(mfile);
             short mainNo = 0;
             short subNo = 0;
-            if (validator.isValidFile(mfile)) {
+            boolean isValidFile = validator.isValidFile(mFile);
+            if (!isValidFile) {
+                System.out.println(file.getName() + " is not a valid file");
+                return null;
+            } else {
                 mainNo = validator.getMainNo();
                 subNo = validator.getSubNo();
             }
@@ -290,48 +290,136 @@ public class StorageManager {
             List<Plan> existingPlans = planRepository.findByProjectInAndMainNoInAndSubNoIn(projectUpdate, mainNo,
                     subNo);
             Collections.sort(existingPlans);
-            Plan max = existingPlans.get(existingPlans.size() - 1);
-            // max version
-            short maxVersion = max.getVersion();
-            short version = (short) (maxVersion + 1);
-            Status status = Status.WAITING_FOR_APPROVAL;
 
-            OffsetDateTime createdAt = OffsetDateTime.now();
+            short version = 0;
+            Status status = Status.APPROVED;
+            if (isNewVersion) {
+                Plan max = existingPlans.get(existingPlans.size() - 1);
+                // max version
+                short maxVersion = max.getVersion();
+                version = (short) (maxVersion + 1);
+                status = Status.WAITING_FOR_APPROVAL;
+            }
+
+            OffsetDateTime createdAt = null;
             OffsetDateTime updatedAt = null;
-            UserPrincipal owner;
-
-            owner = java.nio.file.Files.getOwner(file.toPath());
-
+            UserPrincipal owner = java.nio.file.Files.getOwner(file.toPath());
             String createdBy = owner.toString();
             String updatedBy = null;
             boolean deleted = false;
             boolean maintenanceDuty = false;
             String pdfUrl = "";
             String xmlUrl = "";
+            String dwgUrl = "";
+            String dxfUrl = "";
+            String svgUrl = "";
 
+            System.out.println("About to save file " + name);
             // TODO: Use the correct (plans) bucket when available
-            String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
+            String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mFile, version);
 
             if (name.endsWith(".pdf")) {
-
-                // CREATE NEW VERSION
                 pdfUrl = savedImageUrl;
-
             } else if (name.endsWith(".xml")) {
                 xmlUrl = savedImageUrl;
-
+            } else if (name.endsWith(".dwg")) {
+                dwgUrl = savedImageUrl;
+            } else if (name.endsWith(".dxf")) {
+                dxfUrl = savedImageUrl;
             } else {
                 return null;
             }
 
-            Plan plan = new Plan(projectUpdate, new ArrayList<Ptext>(), mainNo, subNo, version, pdfUrl, null, status,
-                    createdAt, createdBy, updatedAt, updatedBy, deleted, maintenanceDuty);
-            Plan savedPlan = planRepository.save(plan);
-            savedPlanValue = PlanToPlanValueMapper.planToPlanValue(savedPlan, projectUpdate);
+            if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
+                // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
+                CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
+                ConvertProcess process;
+                try {
+                    String inputFormat = name.substring(name.length() - 3);
+                    process = service.startProcess(inputFormat, "svg");
+                    long startConversion = System.nanoTime();
+                    process.startConversion(file);
 
+                    ProcessStatus conversionStatus;
+                    waitLoop:
+                    while (true) {
+                        conversionStatus = process.getStatus();
+                        switch (conversionStatus.step) {
+                            case FINISHED: {
+                                long endConversion = System.nanoTime();
+                                System.out.println("Milliseconds elapsed in conversion:" + (endConversion - startConversion) / 1000000);
+                                break waitLoop;
+                            }
+                            case ERROR:
+                                throw new RuntimeException(conversionStatus.message);
+                        }
+                        Thread.sleep(200);
+                    }
+
+                    InputStream svgStream = service.download(conversionStatus.output.url);
+                    String fileName = name + ".svg";
+                    service.download(conversionStatus.output.url, new File(fileName));
+                    svgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, version);
+                    process.delete();
+                } catch (java.net.URISyntaxException e) {
+                    System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
+                } catch (java.text.ParseException e) {
+                    System.out.println("Error parsing CAD file: " + e.toString());
+                } catch (java.lang.InterruptedException e) {
+                    System.out.println("Error in waitLoop: " + e.toString());
+                }
+            } else {
+                return null;
+            }
+
+            Plan plan = null;
+            if (isNewVersion || existingPlans.size() == 0) {
+                createdAt = OffsetDateTime.now();
+                plan = new Plan(projectUpdate, new ArrayList<Ptext>(), mainNo, subNo, version, pdfUrl, null, status,
+                        createdAt, createdBy, updatedAt, updatedBy, deleted, maintenanceDuty);
+            } else {
+                updatedAt = OffsetDateTime.now();
+                Plan max = existingPlans.get(existingPlans.size() - 1);
+                if (name.endsWith(".xml")) {
+                    if (!max.getXmlUrl().isEmpty()) {
+                        return null;
+                    }
+                    max.setXmlUrl(xmlUrl);
+                } else {
+                    if (!max.getPdfUrl().isEmpty()) {
+                        return null;
+                    }
+                    max.setPdfUrl(pdfUrl);
+                }
+                max.setUpdatedAt(updatedAt);
+                plan = max;
+            }
+
+            // UI should not allow but pdf or dwg or dxf or xml file types.
+            // If you want to add more file types modify the method getFileList(String dirPath)
+            clearFiles();
+
+            Plan savedPlan = planRepository.save(plan);
+            planValue = PlanToPlanValueMapper.planToPlanValue(savedPlan, projectUpdate);
         } catch (IOException e) {
+            System.out.println("IOException caught: " + e.toString());
 
         }
+
+        return planValue;
+    }
+
+    /**
+     *
+     * @param mfile
+     * @param projectId
+     * @return
+     */
+    public PlanValue createPlanVersion(MultipartFile mfile, long projectId) throws IOException {
+
+        System.out.println("createPlanVersion()");
+        boolean isNewVersion = true;
+        PlanValue savedPlanValue = initPlanValue(mfile, projectId, isNewVersion);
         return savedPlanValue;
 
     }
@@ -351,141 +439,23 @@ public class StorageManager {
      */
     public PlanValue createUpdatePlan(MultipartFile mfile, long projectId) throws IOException {
 
-        File file = FileConverter.multipartFileToFile(mfile);
-        String name = file.getName().toLowerCase();
-
-        PlanValidator validator = new PlanValidator();
-        short mainNo = 0;
-        short subNo = 0;
-        boolean isValidFile = validator.isValidFile(mfile);
-        if (!validator.isValidFile(mfile)) {
-            return null;
-        }
-
-        if (validator.isValidFile(mfile)) {
-
-            mainNo = validator.getMainNo();
-            subNo = validator.getSubNo();
-        }
-
-        ProjectUpdate projectUpdate = projectUpdateRepository.findByProjectId(projectId);
-        // find by projectid, mainno, subno
-        List<Plan> existingPlans = planRepository.findByProjectInAndMainNoInAndSubNoIn(projectUpdate, mainNo, subNo);
-        Collections.sort(existingPlans);
-
-        // max version
-        short version = 0;
-        Status status = Status.APPROVED;
-        String url = "";
-        String xmlUrl = "";
-        UserPrincipal owner = java.nio.file.Files.getOwner(file.toPath());
-        String createdBy = owner.toString();
-        String updatedBy = null;
-        boolean deleted = false;
-        boolean maintenanceDuty = false;
-        OffsetDateTime createdAt = null;
-        OffsetDateTime updatedAt = null;
-        // TODO: Use the correct (plans) bucket when available
-        String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
-
-        Plan plan = null;
-
-        if (name.endsWith(".xml")) {
-            xmlUrl = savedImageUrl;
-        } else {
-            url = savedImageUrl;
-        }
-
-        if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
-            // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
-            CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
-            ConvertProcess process;
-            try {
-                String inputFormat = name.substring(name.length() - 3);
-                process = service.startProcess(inputFormat, "svg");
-                long startConversion = System.nanoTime();
-                process.startConversion(file);
-
-                ProcessStatus conversionStatus;
-                waitLoop:
-                while (true) {
-                    conversionStatus = process.getStatus();
-                    switch (conversionStatus.step) {
-                        case FINISHED: {
-                            long endConversion = System.nanoTime();
-                            System.out.println("Milliseconds elapsed in conversion:" + (endConversion - startConversion) / 1000000);
-                            break waitLoop;
-                        }
-                        case ERROR:
-                            throw new RuntimeException(conversionStatus.message);
-                    }
-                    Thread.sleep(200);
-                }
-
-                InputStream svgStream = service.download(conversionStatus.output.url);
-                String fileName = name + ".svg";
-                service.download(conversionStatus.output.url, new File(fileName));
-                url = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, version);
-                process.delete();
-            } catch (java.net.URISyntaxException e) {
-                System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
-            } catch (java.text.ParseException e) {
-                System.out.println("Error parsing CAD file: " + e.toString());
-            } catch (java.lang.InterruptedException e) {
-                System.out.println("Error in waitLoop: " + e.toString());
-            }
-        } else {
-            return null;
-        }
-
-        if (existingPlans.size() == 0) {
-            createdAt = OffsetDateTime.now();
-            plan = new Plan(projectUpdate, new ArrayList<Ptext>(), mainNo, subNo, version, url, xmlUrl, status,
-                    createdAt, createdBy, updatedAt, updatedBy, deleted, maintenanceDuty);
-        } else {
-
-            updatedAt = OffsetDateTime.now();
-            Plan max = existingPlans.get(existingPlans.size() - 1);
-            if (name.endsWith(".xml")) {
-                if (!max.getXmlUrl().isEmpty()) {
-                    return null;
-                }
-                max.setXmlUrl(xmlUrl);
-            } else {
-                if (!max.getPdfUrl().isEmpty()) {
-                    return null;
-                }
-                max.setPdfUrl(url);
-            }
-            max.setUpdatedAt(updatedAt);
-            plan = max;
-        }
-
-        // UI should not allow but pdf or dwg or dxf or xml file types.
-        // If you want to add more file types modify the method getFileList(String dirPath)
-        clearFiles();
-
-        Plan savedPlan = planRepository.save(plan);
-        PlanValue savedPlanValue = PlanToPlanValueMapper.planToPlanValue(savedPlan, projectUpdate);
-
-        return savedPlanValue;
+        System.out.println("createUpdatePlan()");
+        boolean isNewVersion = false;
+        PlanValue planValue = initPlanValue(mfile, projectId, isNewVersion);
+        return planValue;
 
     }
 
     /**
      * clear temp files pdf, dwg, xml
-     *
-     * @param path
      */
     private void clearFiles() {
 
         String dirPath = System.getProperty("user.dir");
-        System.out.println(dirPath);
 
         File[] files = getFileList(dirPath);
 
         for (File f : files) {
-            System.out.println(f.getName());
             try {
                 Files.deleteIfExists(f.toPath());
             } catch (IOException e) {
