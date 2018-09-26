@@ -23,6 +23,12 @@ public class LatestPlansValue {
 
 	private String xmlUrl;
 
+	private String dwgUrl;
+
+	private String dxfUrl;
+
+	private String svgUrl;
+
 	private String status;
 
 	private List<PtextValue> commentValues;
@@ -89,13 +95,36 @@ public class LatestPlansValue {
 		this.pdfUrl = pdfUrl;
 	}
 
-
 	public String getXmlUrl() {
 		return xmlUrl;
 	}
 
 	public void setXmlUrl(String xmlUrl) {
 		this.xmlUrl = xmlUrl;
+	}
+
+	public String getDwgUrl() {
+		return dwgUrl;
+	}
+
+	public void setDwgUrl(String dwgUrl) {
+		this.dwgUrl = dwgUrl;
+	}
+
+	public String getDxfUrl() {
+		return dxfUrl;
+	}
+
+	public void setDxfUrl(String dxfUrl) {
+		this.dxfUrl = dxfUrl;
+	}
+
+	public String getSvgUrl() {
+		return svgUrl;
+	}
+
+	public void setSvgUrl(String svgUrl) {
+		this.svgUrl = svgUrl;
 	}
 
 	public String getStatus() {

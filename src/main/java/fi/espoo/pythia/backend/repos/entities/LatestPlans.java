@@ -71,6 +71,18 @@ public class LatestPlans implements Serializable, Comparable<LatestPlans> {
 	@Column(name = "xml_url")
 	private String xmlUrl;
 
+	// varchar
+	@Column(name = "dwg_url")
+	private String dwgUrl;
+
+	// varchar
+	@Column(name = "dxf_url")
+	private String dxfUrl;
+
+	// varchar
+	@Column(name = "svg_url")
+	private String svgUrl;
+
 	//@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private String status;
@@ -171,6 +183,30 @@ public class LatestPlans implements Serializable, Comparable<LatestPlans> {
 
 	public void setXmlUrl(String xmlUrl) {
 		this.xmlUrl = xmlUrl;
+	}
+
+	public String getDwgUrl() {
+		return dwgUrl;
+	}
+
+	public void setDwgUrl(String dwgUrl) {
+		this.dwgUrl = dwgUrl;
+	}
+
+	public String getDxfUrl() {
+		return dxfUrl;
+	}
+
+	public void setDxfUrl(String dxfUrl) {
+		this.dxfUrl = dxfUrl;
+	}
+
+	public String getSvgUrl() {
+		return svgUrl;
+	}
+
+	public void setSvgUrl(String svgUrl) {
+		this.svgUrl = svgUrl;
 	}
 
 	public String getStatus() {
