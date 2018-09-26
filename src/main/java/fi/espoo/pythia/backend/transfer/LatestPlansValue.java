@@ -23,7 +23,7 @@ public class LatestPlansValue {
 
 	private String xmlUrl;
 
-	private Status status;
+	private String status;
 
 	private List<PtextValue> commentValues;
 
@@ -98,11 +98,11 @@ public class LatestPlansValue {
 		this.xmlUrl = xmlUrl;
 	}
 
-	public Status getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 

@@ -71,8 +71,9 @@ public class LatestPlans implements Serializable, Comparable<LatestPlans> {
 	@Column(name = "xml_url")
 	private String xmlUrl;
 
-	@Enumerated(EnumType.STRING)
-	private Status status;
+	//@Enumerated(EnumType.STRING)
+	@Column(name = "status")
+	private String status;
 
 	// https://jdbc.postgresql.org/documentation/head/java8-date-time.html
 	// timestamp with timezone
@@ -172,11 +173,11 @@ public class LatestPlans implements Serializable, Comparable<LatestPlans> {
 		this.xmlUrl = xmlUrl;
 	}
 
-	public Status getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
