@@ -6,7 +6,9 @@ CREATE TYPE project.status_enum AS ENUM (
     'REVERTED'
 );
 
-ALTER TYPE project.status_enum OWNER TO "${application_user}";;
+CREATE CAST (character varying AS project.status_enum) WITH INOUT AS IMPLICIT;
+
+-- ALTER TYPE project.status_enum OWNER TO "${application_user}";;
 
 CREATE TABLE project.project (
     project_id bigint NOT NULL,

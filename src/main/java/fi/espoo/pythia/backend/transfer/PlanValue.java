@@ -33,7 +33,7 @@ public class PlanValue implements Serializable {
 
 	private String svgUrl;
 
-	private String status;
+	private Status status;
 
 	private OffsetDateTime createdAt;
 
@@ -131,11 +131,11 @@ public class PlanValue implements Serializable {
 		this.svgUrl = svgUrl;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 

@@ -29,7 +29,7 @@ public class LatestPlansValue {
 
 	private String svgUrl;
 
-	private String status;
+	private Status status;
 
 	private List<PtextValue> commentValues;
 
@@ -127,11 +127,11 @@ public class LatestPlansValue {
 		this.svgUrl = svgUrl;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 

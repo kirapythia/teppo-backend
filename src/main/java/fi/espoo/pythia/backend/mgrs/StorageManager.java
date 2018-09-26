@@ -289,13 +289,13 @@ public class StorageManager {
             Collections.sort(existingPlans);
 
             planValue.setVersion((short)  0);
-            planValue.setStatus("APPROVED");
+            planValue.setStatus(Status.APPROVED);
             if (isNewVersion) {
                 Plan max = existingPlans.get(existingPlans.size() - 1);
                 // max version
                 short maxVersion = max.getVersion();
                 planValue.setVersion((short) (maxVersion + 1));
-                planValue.setStatus("WAITING_FOR_APPROVAL");
+                planValue.setStatus(Status.WAITING_FOR_APPROVAL);
             }
 
             UserPrincipal owner = java.nio.file.Files.getOwner(file.toPath());
@@ -396,7 +396,7 @@ public class StorageManager {
             // If you want to add more file types modify the method getFileList(String dirPath)
             clearFiles();
 
-            Plan savedPlan = planRepository.save(plan);
+             Plan savedPlan = planRepository.save(plan);
             planValue = PlanToPlanValueMapper.planToPlanValue(savedPlan, projectUpdate);
         } catch (IOException e) {
             System.out.println("IOException caught: " + e.toString());

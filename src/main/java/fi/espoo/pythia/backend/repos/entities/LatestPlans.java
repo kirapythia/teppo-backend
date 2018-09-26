@@ -83,9 +83,8 @@ public class LatestPlans implements Serializable, Comparable<LatestPlans> {
 	@Column(name = "svg_url")
 	private String svgUrl;
 
-	//@Enumerated(EnumType.STRING)
-	@Column(name = "status")
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private Status status;
 
 	// https://jdbc.postgresql.org/documentation/head/java8-date-time.html
 	// timestamp with timezone
@@ -209,11 +208,11 @@ public class LatestPlans implements Serializable, Comparable<LatestPlans> {
 		this.svgUrl = svgUrl;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 

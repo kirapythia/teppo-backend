@@ -88,9 +88,8 @@ public class Plan implements Serializable, Comparable<Plan> {
     // @Type(type="statusConverter")
     // private Status status;
 
-    //@Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     // https://jdbc.postgresql.org/documentation/head/java8-date-time.html
     // timestamp with timezone
@@ -127,7 +126,7 @@ public class Plan implements Serializable, Comparable<Plan> {
     }
 
     public Plan(ProjectUpdate project, List<Ptext> ptextList, short mainNo, short subNo, short version,
-            String pdfUrl, String xmlUrl, String status, OffsetDateTime createdAt, String createdBy,
+            String pdfUrl, String xmlUrl, Status status, OffsetDateTime createdAt, String createdBy,
             OffsetDateTime updatedAt, String updatedBy, boolean deleted, boolean maintenanceDuty) {
         this.project = project;
         this.ptextList = ptextList;
@@ -156,7 +155,7 @@ public class Plan implements Serializable, Comparable<Plan> {
         this.dwgUrl = planValue.getDwgUrl();
         this.dxfUrl = planValue.getDxfUrl();
         this.svgUrl = planValue.getSvgUrl();
-        this.status = planValue.getStatus().toString();
+        this.status = planValue.getStatus();
         this.createdAt = planValue.getCreatedAt();
         this.createdBy = planValue.getCreatedBy();
         this.updatedAt = planValue.getUpdatedAt();
@@ -255,11 +254,11 @@ public class Plan implements Serializable, Comparable<Plan> {
         this.svgUrl = svgUrl;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 
