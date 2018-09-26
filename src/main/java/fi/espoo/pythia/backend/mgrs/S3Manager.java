@@ -25,7 +25,10 @@ public class S3Manager {
 
     public String createPlanMultipartFile(String bucketName, MultipartFile mfile, short version) throws IOException {
 
-        AmazonS3 s3client = this.authenticate();
+        // TODO: Use credentials, after infra changes regarding secret handling are ready
+        // AmazonS3 s3client = this.authenticate();
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
+
 
         File file = FileConverter.multipartFileToFile(mfile);
 
@@ -46,7 +49,9 @@ public class S3Manager {
 
     public String createPlanInputStream(String bucketName, InputStream inputStream, String fileName, short version) throws IOException {
 
-        AmazonS3 s3client = this.authenticate();
+        // TODO: Use credentials, after infra changes regarding secret handling are ready
+        // AmazonS3 s3client = this.authenticate();
+        AmazonS3 s3client = AmazonS3ClientBuilder.standard().withRegion(Regions.EU_WEST_1).build();
 
         int idxDot = fileName.indexOf(".");
 
