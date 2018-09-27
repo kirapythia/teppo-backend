@@ -308,8 +308,6 @@ public class StorageManager {
             planValue.setDxfUrl("");
             planValue.setSvgUrl("");
 
-            System.out.println("About to save file " + name);
-            // TODO: Use the correct (plans) bucket when available
             String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mFile, planValue.getVersion());
 
             if (name.endsWith(".pdf")) {
