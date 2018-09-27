@@ -6,7 +6,9 @@ CREATE TYPE project.status_enum AS ENUM (
     'REVERTED'
 );
 
--- ALTER TYPE project.status_enum OWNER TO tepposervice;
+CREATE CAST (character varying AS project.status_enum) WITH INOUT AS IMPLICIT;
+
+-- ALTER TYPE project.status_enum OWNER TO "${application_user}";;
 
 CREATE TABLE project.project (
     project_id bigint NOT NULL,
@@ -118,6 +120,9 @@ CREATE VIEW project.latest_plans AS
     p1.version,
     p1.pdf_url,
     p1.xml_url,
+    p1.dwg_url,
+    p1.dxf_url,
+    p1.svg_url,
     p1.status,
     p1.created_at,
     p1.created_by,
@@ -141,6 +146,9 @@ UNION ALL
     p1.version,
     p1.pdf_url,
     p1.xml_url,
+    p1.dwg_url,
+    p1.dxf_url,
+    p1.svg_url,
     p1.status,
     p1.created_at,
     p1.created_by,
