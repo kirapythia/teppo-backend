@@ -27,6 +27,12 @@ public class PlanValue implements Serializable {
 	
 	private String xmlUrl;
 
+	private String dwgUrl;
+
+	private String dxfUrl;
+
+	private String svgUrl;
+
 	private Status status;
 
 	private OffsetDateTime createdAt;
@@ -101,6 +107,30 @@ public class PlanValue implements Serializable {
 		this.xmlUrl = xmlUrl;
 	}
 
+	public String getDwgUrl() {
+		return dwgUrl;
+	}
+
+	public void setDwgUrl(String dwgUrl) {
+		this.dwgUrl = dwgUrl;
+	}
+
+	public String getDxfUrl() {
+		return dxfUrl;
+	}
+
+	public void setDxfUrl(String dxfUrl) {
+		this.dxfUrl = dxfUrl;
+	}
+
+	public String getSvgUrl() {
+		return svgUrl;
+	}
+
+	public void setSvgUrl(String svgUrl) {
+		this.svgUrl = svgUrl;
+	}
+
 	public Status getStatus() {
 		return status;
 	}
@@ -172,8 +202,5 @@ public class PlanValue implements Serializable {
 	public void setStreetManagementDecision(OffsetDateTime streetManagementDecision) {
 		this.streetManagementDecision = streetManagementDecision;
 	}
-
-
-	
 
 }

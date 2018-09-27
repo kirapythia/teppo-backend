@@ -61,8 +61,14 @@ public class ApplicationConfig {
 			url = "jdbc:postgresql://localhost";
 		}
 		String port = "5432";
-		DataSource dataSource = DataSourceBuilder.create().url(url + ":"+port+"/pythia")
-				.driverClassName("org.postgresql.Driver").username("pythiaservice").password("pythiaservice").build();
+		String dbUrl = url + ":" + port + "/teppo";
+		String dataSourceUrl = System.getenv("SPRING_DATASOURCE_URL");
+		if (dataSourceUrl != null) {
+			dbUrl = dataSourceUrl;
+		}
+		System.out.println("Connecting to " + dbUrl);
+		DataSource dataSource = DataSourceBuilder.create().url(dbUrl)
+				.driverClassName("org.postgresql.Driver").username("tepposervice").password("tepposervice").build();
 
 		return dataSource;
 	}

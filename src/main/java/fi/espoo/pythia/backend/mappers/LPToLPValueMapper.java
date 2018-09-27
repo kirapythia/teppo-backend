@@ -23,6 +23,9 @@ public class LPToLPValueMapper {
 		pv.setVersion(p.getVersion());
 		pv.setPdfUrl(p.getPdfUrl());
 		pv.setXmlUrl(p.getXmlUrl());
+		pv.setDwgUrl(p.getDwgUrl());
+		pv.setDxfUrl(p.getDxfUrl());
+		pv.setSvgUrl(p.getSvgUrl());
 		pv.setStatus(p.getStatus());
 
 		List<PtextValue> commentValues = new ArrayList<PtextValue>();
