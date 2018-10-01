@@ -362,10 +362,8 @@ public class StorageManager {
                 } catch (java.lang.InterruptedException e) {
                     System.out.println("Error in waitLoop: " + e.toString());
                 }
-            } else {
-                return null;
             }
-
+            
             Plan plan = null;
             if (isNewVersion || existingPlans.size() == 0) {
                 planValue.setCreatedAt(OffsetDateTime.now());
