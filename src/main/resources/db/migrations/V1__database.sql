@@ -78,6 +78,7 @@ CREATE TABLE project.ptext (
     plan_id bigint,
     url character varying,
     approved boolean,
+    approved_by character varying,
     created_at timestamp with time zone,
     created_by character varying,
     updated_at timestamp with time zone,
