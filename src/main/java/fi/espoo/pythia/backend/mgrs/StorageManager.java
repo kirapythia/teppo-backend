@@ -309,6 +309,8 @@ public class StorageManager {
             planValue.setSvgUrl("");
 
             String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mFile, planValue.getVersion());
+            // TODO: Use the real S3 url (instead the local path), when CORS problem is resolved.
+            savedImageUrl = "file://" + file.getAbsolutePath();
 
             if (name.endsWith(".pdf")) {
                 planValue.setPdfUrl(savedImageUrl);
@@ -351,9 +353,12 @@ public class StorageManager {
 
                     InputStream svgStream = service.download(conversionStatus.output.url);
                     String fileName = name + ".svg";
-                    service.download(conversionStatus.output.url, new File(fileName));
+                    File svgFile = new File(fileName);
+                    service.download(conversionStatus.output.url, svgFile);
                     String svgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, planValue.getVersion());
-                    planValue.setSvgUrl((svgUrl));
+                    //planValue.setSvgUrl(svgUrl);
+                    // TODO: Use the real S3 url (instead the local path), when CORS problem is resolved.
+                    planValue.setSvgUrl("file://" + svgFile.getAbsolutePath());
                     process.delete();
                 } catch (java.net.URISyntaxException e) {
                     System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
@@ -390,7 +395,8 @@ public class StorageManager {
 
             // UI should not allow but pdf or dwg or dxf or xml file types.
             // If you want to add more file types modify the method getFileList(String dirPath)
-            clearFiles();
+            // TODO: Set this back on, when the local files are not used anymore (i.e. CORS problem is resolved)
+            // clearFiles();
 
              Plan savedPlan = planRepository.save(plan);
             planValue = PlanToPlanValueMapper.planToPlanValue(savedPlan, projectUpdate);
