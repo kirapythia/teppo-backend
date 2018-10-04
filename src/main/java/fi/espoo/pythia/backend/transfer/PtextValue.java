@@ -10,7 +10,7 @@ public class PtextValue implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Long textId;
+	private Long ptextId;
 
 	private Long planId;
 
@@ -32,12 +32,12 @@ public class PtextValue implements Serializable {
 
 	}
 
-	public Long getTextId() {
-		return textId;
+	public Long getPtextId() {
+		return ptextId;
 	}
 
-	public void setTextId(Long textId) {
-		this.textId = textId;
+	public void setPtextId(Long ptextId) {
+		this.ptextId = ptextId;
 	}
 
 	public Long getPlanId() {

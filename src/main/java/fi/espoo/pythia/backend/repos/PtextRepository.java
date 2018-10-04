@@ -9,7 +9,7 @@ import fi.espoo.pythia.backend.repos.entities.Plan;
 
 public interface PtextRepository extends JpaRepository<Ptext, Long>{
 	
-	Ptext findByTextId(Long id);
+	Ptext findByPtextId(Long id);
 
 	List<Ptext> findByPlan(Plan plan);
 
