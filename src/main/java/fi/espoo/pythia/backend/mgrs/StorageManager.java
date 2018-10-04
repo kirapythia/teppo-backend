@@ -177,7 +177,7 @@ public class StorageManager {
     }
 
     public PtextValue getComment(long id) {
-        Ptext comment = ptextRepository.findByTextId(id);
+        Ptext comment = ptextRepository.findByPtextId(id);
         Plan plan = comment.getPlan();
         PtextValue cVal = PtextToPtextValueMapper.ptextToPtextValue(comment, plan);
 
@@ -577,7 +577,7 @@ public class StorageManager {
         Plan plan = planRepository.findByPlanId(pTextVal.getPlanId());
         Ptext pText = PtextValueToPtextMapper.commentValueToComment(pTextVal, plan, pTextVal.isApproved(), true);
 
-        pText.setTextId(id);
+        pText.setPtextId(id);
 
         Ptext updatedPtext = ptextRepository.save(pText);
 

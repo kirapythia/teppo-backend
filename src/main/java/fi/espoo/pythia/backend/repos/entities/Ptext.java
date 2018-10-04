@@ -35,15 +35,11 @@ public class Ptext implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-//	@Id
-//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ptex_generator")
-//	@SequenceGenerator(name = "ptex_generator", sequenceName = "ptex_serial, allocationSize = 1")
-//	@Column(name = "text_id", updatable = false, nullable = false)
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ptex_generator")
-	@SequenceGenerator(name = "ptex_generator", sequenceName = "ptex_serial", allocationSize = 1)
-	@Column(name = "text_id", updatable = false, nullable = false)
-	private Long textId;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ptext_generator")
+	@SequenceGenerator(name = "ptext_generator", sequenceName = "ptext_serial", allocationSize = 1)
+	@Column(name = "ptext_id", updatable = false, nullable = false)
+	private Long ptextId;
 
 	@ManyToOne
 	@JoinColumn(name = "plan_id")
@@ -74,12 +70,12 @@ public class Ptext implements Serializable {
 
 	}
 
-	public Long getTextId() {
-		return textId;
+	public Long getPtextId() {
+		return ptextId;
 	}
 
-	public void setTextId(Long textId) {
-		this.textId = textId;
+	public void setPtextId(Long ptextId) {
+		this.ptextId = ptextId;
 	}
 
 	@JsonIgnore
@@ -152,7 +148,7 @@ public class Ptext implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((textId == null) ? 0 : textId.hashCode());
+		result = prime * result + ((ptextId == null) ? 0 : ptextId.hashCode());
 		return result;
 	}
 
@@ -165,10 +161,10 @@ public class Ptext implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Ptext other = (Ptext) obj;
-		if (textId == null) {
-			if (other.textId != null)
+		if (ptextId == null) {
+			if (other.ptextId != null)
 				return false;
-		} else if (!textId.equals(other.textId))
+		} else if (!ptextId.equals(other.ptextId))
 			return false;
 		return true;
 	}
