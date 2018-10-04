@@ -102,7 +102,7 @@ CREATE SEQUENCE project.ptext_serial
     CACHE 1;
 
 
--- ALTER TABLE project.ptex_serial OWNER TO tepposervice;
+-- ALTER TABLE project.ptext_serial OWNER TO tepposervice;
 
 CREATE TABLE project.sister_project (
     id bigint NOT NULL,
