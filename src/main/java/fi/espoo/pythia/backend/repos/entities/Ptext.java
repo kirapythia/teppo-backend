@@ -66,6 +66,18 @@ public class Ptext implements Serializable {
 	@Column(name = "updated_by")
 	private String updatedBy;
 
+	@Column(name = "xcoord")
+	private double x;
+
+	@Column(name = "ycoord")
+	private double y;
+
+	@Column(name = "xwidth")
+	private double width;
+
+	@Column(name = "yheight")
+	private double height;
+
 	public Ptext() {
 
 	}
@@ -142,6 +154,38 @@ public class Ptext implements Serializable {
 
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
+	}
+
+	public double getX() {
+		return x;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public void setWidth(double width) {
+		this.width = width;
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
 	}
 
 	@Override
