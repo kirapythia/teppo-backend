@@ -19,6 +19,10 @@ public class PtextToPtextValueMapper {
 		cv.setCreatedBy(c.getCreatedBy());
 		cv.setUpdatedAt(c.getUpdatedAt());
 		cv.setUpdatedBy(c.getUpdatedBy());
+		cv.setX(c.getX());
+		cv.setY(c.getY());
+		cv.setWidth(c.getWidth());
+		cv.setHeight(c.getHeight());
 
 		return cv;
 	}
@@ -35,6 +39,10 @@ public class PtextToPtextValueMapper {
 		cv.setCreatedBy(c.getCreatedBy());
 		cv.setUpdatedAt(c.getUpdatedAt());
 		cv.setUpdatedBy(c.getUpdatedBy());
+		cv.setX(c.getX());
+		cv.setY(c.getY());
+		cv.setWidth(c.getWidth());
+		cv.setHeight(c.getHeight());
 
 		return cv;
 	}

@@ -84,10 +84,10 @@ CREATE TABLE project.ptext (
     updated_at timestamp with time zone,
     updated_by character varying,
     ptext character varying,
-    xcoord decimal,
-    ycoord decimal,
-    xwidth smallint,
-    yheight smallint
+    xcoord double precision,
+    ycoord double precision,
+    xwidth double precision,
+    yheight double precision
 
 );
 
