@@ -47,7 +47,7 @@ public class S3Manager {
         return url;
     }
 
-    public String createPlanInputStream(String bucketName, InputStream inputStream, String fileName, short version) throws IOException {
+    public String createPlanInputStream(String bucketName, InputStream inputStream, String fileName, long streamLength, short version) throws IOException {
 
         // TODO: Use credentials, after infra changes regarding secret handling are ready
         // AmazonS3 s3client = this.authenticate();
@@ -60,7 +60,7 @@ public class S3Manager {
 
         String key = key_start+"_"+version+key_end;
         //String key = file.getName();
-        String url = uploadStream(s3client, inputStream, key, bucketName);
+        String url = uploadStream(s3client, inputStream, streamLength, key, bucketName);
         giveReadPermissionToObject(s3client, bucketName, key);
 
         return url;
@@ -103,9 +103,12 @@ public class S3Manager {
         return url.toString();
     }
 
-    public String uploadStream(AmazonS3 s3client, InputStream inputStream, String key, String bucketName) {
+    public String uploadStream(AmazonS3 s3client, InputStream inputStream, long streamLength, String key, String bucketName) {
 
-        s3client.putObject(bucketName, key, inputStream, null);
+        ObjectMetadata metaData = new ObjectMetadata();
+        metaData.setContentType("image/svg+xml");
+        metaData.setContentLength(streamLength);
+        s3client.putObject(bucketName, key, inputStream, metaData);
         URL url = s3client.getUrl(bucketName, key);
         return url.toString();
     }

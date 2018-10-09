@@ -355,7 +355,8 @@ public class StorageManager {
                     String fileName = name + ".svg";
                     File svgFile = new File(fileName);
                     service.download(conversionStatus.output.url, svgFile);
-                    String svgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, planValue.getVersion());
+                    long fileSize = svgFile.length();
+                    String svgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, fileSize, planValue.getVersion());
                     //planValue.setSvgUrl(svgUrl);
                     // TODO: Use the real S3 url (instead the local path), when CORS problem is resolved.
                     planValue.setSvgUrl("file://" + svgFile.getAbsolutePath());
