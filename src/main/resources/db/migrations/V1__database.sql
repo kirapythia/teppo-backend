@@ -74,26 +74,27 @@ CREATE SEQUENCE project.plan_serial
 
 
 CREATE TABLE project.ptext (
-    text_id bigint NOT NULL,
+    ptext_id bigint NOT NULL,
     plan_id bigint,
     url character varying,
     approved boolean,
+    approved_by character varying,
     created_at timestamp with time zone,
     created_by character varying,
     updated_at timestamp with time zone,
     updated_by character varying,
     ptext character varying,
-    xcoord decimal,
-    ycoord decimal,
-    xwidth smallint,
-    yheight smallint
+    xcoord double precision,
+    ycoord double precision,
+    xwidth double precision,
+    yheight double precision
 
 );
 
 
 -- ALTER TABLE project.ptext OWNER TO tepposervice;
 
-CREATE SEQUENCE project.ptex_serial
+CREATE SEQUENCE project.ptext_serial
     START WITH 1
     INCREMENT BY 1
     MINVALUE 0
@@ -101,7 +102,7 @@ CREATE SEQUENCE project.ptex_serial
     CACHE 1;
 
 
--- ALTER TABLE project.ptex_serial OWNER TO tepposervice;
+-- ALTER TABLE project.ptext_serial OWNER TO tepposervice;
 
 CREATE TABLE project.sister_project (
     id bigint NOT NULL,
