@@ -325,7 +325,7 @@ public class StorageManager {
                 return null;
             }
 
-            if (name.endsWith(".dwg") || name.endsWith(".dxf")) {
+            if (name.endsWith(".dwg") || name.endsWith(".dxf") || name.endsWith(".pdf")) {
                 // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
                 CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
                 ConvertProcess process;
@@ -369,7 +369,7 @@ public class StorageManager {
                     System.out.println("Error in waitLoop: " + e.toString());
                 }
             }
-            
+
             Plan plan = null;
             if (isNewVersion || existingPlans.size() == 0) {
                 planValue.setCreatedAt(OffsetDateTime.now());
