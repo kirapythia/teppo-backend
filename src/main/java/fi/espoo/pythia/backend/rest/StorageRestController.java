@@ -366,7 +366,8 @@ public class StorageRestController {
                 return new ResponseEntity<PtextValue>(HttpStatus.NOT_FOUND);
             }
             short version = 0;
-            String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-comments-dev", mfile, version);
+            // TODO: store to teppo-comments-dev bucket, when it exists
+            String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mfile, version);
             // set PlanValue url
             ptextVal.setUrl(savedImageUrl);
             // update Plan with url
