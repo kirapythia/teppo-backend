@@ -17,14 +17,14 @@ public class PtextValueToPtextMapper {
 		c.setPlan(plan);
 		c.setPtext(cv.getPtext());
 		c.setApproved(approved);
-		c.setApprovedAt(OffsetDateTime.now());
-		c.setApprovedBy(cv.getUpdatedBy());
+		c.setApprovedAt(cv.getApprovedAt());
+		c.setApprovedBy(cv.getApprovedBy());
 		c.setUrl(cv.getUrl());
 
 		if (updating == false) {
 			c.setCreatedAt(OffsetDateTime.now());
 		} else {
-			c.setCreatedAt(c.getCreatedAt());
+			c.setCreatedAt(cv.getCreatedAt());
 		}
 
 		c.setCreatedBy(cv.getCreatedBy());
