@@ -327,7 +327,10 @@ public class StorageManager {
 
             if (name.endsWith(".dwg") || name.endsWith(".dxf") || name.endsWith(".pdf")) {
                 // TODO: Get Teppo/Voltti account for CloudConvert and take the correct apiKey in use
-                CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
+                // CloudConvertService service = new CloudConvertService("4EXemBQpwkBuT5jhF4CB6tTbKh16qdQcP4OQ5AydIPcNfahD3uufQjwdfvieXABt");
+                // DONE: kakedigi user and its hash
+                CloudConvertService service = new CloudConvertService("twjNjBZk34QSZezFpCJAGftHDJ7XMApE4S8doA09gISLPKrF4aaxMutgaDDwkaLy");
+                
                 ConvertProcess process;
                 try {
                     String inputFormat = name.substring(name.length() - 3);
