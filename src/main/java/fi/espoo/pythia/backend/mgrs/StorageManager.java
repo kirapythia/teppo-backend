@@ -309,8 +309,6 @@ public class StorageManager {
             planValue.setSvgUrl("");
 
             String savedImageUrl = s3Manager.createPlanMultipartFile("teppo-plans-dev", mFile, planValue.getVersion());
-            // TODO: Use the real S3 url (instead the local path), when CORS problem is resolved.
-            savedImageUrl = "file://" + file.getAbsolutePath();
 
             if (name.endsWith(".pdf")) {
                 planValue.setPdfUrl(savedImageUrl);
@@ -360,9 +358,7 @@ public class StorageManager {
                     service.download(conversionStatus.output.url, svgFile);
                     long fileSize = svgFile.length();
                     String svgUrl = s3Manager.createPlanInputStream("teppo-plans-dev", svgStream, fileName, fileSize, planValue.getVersion());
-                    //planValue.setSvgUrl(svgUrl);
-                    // TODO: Use the real S3 url (instead the local path), when CORS problem is resolved.
-                    planValue.setSvgUrl("file://" + svgFile.getAbsolutePath());
+                    planValue.setSvgUrl(svgUrl);
                     process.delete();
                 } catch (java.net.URISyntaxException e) {
                     System.out.println("Error in CloudConvertService startProcess(): " + e.toString());
