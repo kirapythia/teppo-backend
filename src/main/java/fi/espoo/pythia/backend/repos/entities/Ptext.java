@@ -51,6 +51,12 @@ public class Ptext implements Serializable {
 	@Column(name = "approved")
 	private boolean approved;
 
+	@Column(name = "approved_at")
+	private OffsetDateTime approvedAt;
+
+	@Column(name = "approved_by")
+	private String approvedBy;
+
 	@Column(name = "url")
 	private String url;
 
@@ -114,6 +120,22 @@ public class Ptext implements Serializable {
 
 	public void setApproved(boolean approved) {
 		this.approved = approved;
+	}
+
+	public OffsetDateTime getApprovedAt() {
+		return approvedAt;
+	}
+
+	public void setApprovedAt(OffsetDateTime approvedAt) {
+		this.approvedAt = approvedAt;
+	}
+
+	public String getApprovedBy() {
+		return approvedBy;
+	}
+
+	public void setApprovedBy(String approvedBy) {
+		this.approvedBy = approvedBy;
 	}
 
 	public String getUrl() {

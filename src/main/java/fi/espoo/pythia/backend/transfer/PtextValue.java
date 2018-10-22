@@ -18,6 +18,10 @@ public class PtextValue implements Serializable {
 
     private boolean approved;
 
+    private OffsetDateTime approvedAt;
+
+    private String approvedBy;
+
     private String url;
 
     private OffsetDateTime createdAt;
@@ -70,6 +74,22 @@ public class PtextValue implements Serializable {
 
     public void setApproved(boolean approved) {
         this.approved = approved;
+    }
+
+    public OffsetDateTime getApprovedAt() {
+        return approvedAt;
+    }
+
+    public void setApprovedAt(OffsetDateTime approvedAt) {
+        this.approvedAt = approvedAt;
+    }
+
+    public String getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy = approvedBy;
     }
 
     public String getUrl() {

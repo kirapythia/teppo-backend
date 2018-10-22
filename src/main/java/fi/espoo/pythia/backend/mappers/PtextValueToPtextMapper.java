@@ -17,6 +17,8 @@ public class PtextValueToPtextMapper {
 		c.setPlan(plan);
 		c.setPtext(cv.getPtext());
 		c.setApproved(approved);
+		c.setApprovedAt(OffsetDateTime.now());
+		c.setApprovedBy(cv.getUpdatedBy());
 		c.setUrl(cv.getUrl());
 
 		if (updating == false) {
