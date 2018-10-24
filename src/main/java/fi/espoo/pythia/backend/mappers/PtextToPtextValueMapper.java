@@ -14,6 +14,8 @@ public class PtextToPtextValueMapper {
 		cv.setPlanId(plan.getPlanId());
 		cv.setPtext(c.getPtext());
 		cv.setApproved(c.isApproved());
+		cv.setApprovedAt(c.getApprovedAt());
+		cv.setApprovedBy(c.getApprovedBy());
 		cv.setUrl(c.getUrl());
 		cv.setCreatedAt(c.getCreatedAt());
 		cv.setCreatedBy(c.getCreatedBy());
@@ -34,6 +36,8 @@ public class PtextToPtextValueMapper {
 		cv.setPlanId(plan.getPlanId());
 		cv.setPtext(c.getPtext());
 		cv.setApproved(c.isApproved());
+		cv.setApprovedAt(c.getApprovedAt());
+		cv.setApprovedBy(c.getApprovedBy());
 		cv.setUrl(c.getUrl());
 		cv.setCreatedAt(c.getCreatedAt());
 		cv.setCreatedBy(c.getCreatedBy());
