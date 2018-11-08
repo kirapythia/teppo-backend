@@ -1,0 +1,32 @@
+# Git files
+.git
+.gitignore
+
+# IDE files
+.editorconfig
+.idea
+*.iml
+
+# Gradle files
+.gradle
+.gradle_user_home
+build.gradle
+gradle
+gradlew
+gradlew.bat
+settings.gradle
+
+# Build files
+build
+out
+
+# Docker and Docker Compose
+.dockerignore
+Dockerfile
+Dockerfile.build
+Dockerfile.dist
+
+
+# Misc
+README.md
+supervisor.pid

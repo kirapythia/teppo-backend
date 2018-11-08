@@ -1,0 +1,32 @@
+#Teppo Service's Dockerfile for dev, test ,staging and prod environments,
+
+#Voltti's OpenJDK base image
+ARG BASE_IMAGE=307238562370.dkr.ecr.eu-west-1.amazonaws.com/voltti/flyway
+ARG BASE_IMAGE_VERSION=latest
+
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+
+ENV USERNAME voltti
+ENV SOURCE_DIR /usr/src/app
+# Specifies the Gradle user home directory where Gradle stores, e.g., the caches
+ENV GRADLE_USER_HOME ${SOURCE_DIR}/.gradle_user_home
+
+WORKDIR ${SOURCE_DIR}
+
+USER root
+
+
+
+USER ${USERNAME}
+
+# Copy entrypoint to the parent directory, so that we can change its permissions
+COPY --chown=voltti:voltti entrypoint.sh ..
+RUN chmod +x ../entrypoint-dist.sh
+
+# Expose Spring Boot's embedded server
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/src/entrypoint-dist.sh"]
+
+
+CMD ["bootRun"]
