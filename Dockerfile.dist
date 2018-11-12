@@ -21,12 +21,11 @@ USER ${USERNAME}
 
 # Copy entrypoint to the parent directory, so that we can change its permissions
 COPY --chown=voltti:voltti entrypoint-dist.sh .
-RUN chmod +x ./entrypoint-dist.sh
+COPY --chown=voltti:voltti build/libs/ .
+
+RUN chmod -R 755 *
 
 # Expose Spring Boot's embedded server
 EXPOSE 8080
 
 ENTRYPOINT ["/usr/src/app/entrypoint-dist.sh"]
-
-
-CMD ["bootRun"]

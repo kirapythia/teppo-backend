@@ -10,7 +10,7 @@ if [[ $# -lt 1 ]] || [[ "$1" == "--"* ]]; then
     #Flyway commands here
 
     # Run as exec so the application can receive any Unix signals sent to the container, e.g., Ctrl + C.
-    exec ./gradlew --no-daemon "$@"
+    exec java -jar teppo-service.jar "$@"
 fi
 
 # As argument is not --env, assume user want to run his own process, for sample a `bash`

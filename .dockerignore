@@ -17,7 +17,7 @@ gradlew.bat
 settings.gradle
 
 # Build files
-build
+#build
 out
 
 # Docker and Docker Compose
