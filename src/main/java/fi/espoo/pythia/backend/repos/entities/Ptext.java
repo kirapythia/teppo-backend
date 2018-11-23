@@ -73,16 +73,16 @@ public class Ptext implements Serializable {
 	private String updatedBy;
 
 	@Column(name = "xcoord")
-	private double x;
+	private Double x;
 
 	@Column(name = "ycoord")
-	private double y;
+	private Double y;
 
 	@Column(name = "xwidth")
-	private double width;
+	private Double width;
 
 	@Column(name = "yheight")
-	private double height;
+	private Double height;
 
 	public Ptext() {
 
@@ -178,35 +178,35 @@ public class Ptext implements Serializable {
 		this.updatedBy = updatedBy;
 	}
 
-	public double getX() {
+	public Double getX() {
 		return x;
 	}
 
-	public void setX(double x) {
+	public void setX(Double x) {
 		this.x = x;
 	}
 
-	public double getY() {
+	public Double getY() {
 		return y;
 	}
 
-	public void setY(double y) {
+	public void setY(Double y) {
 		this.y = y;
-	}
+	}	
 
-	public double getWidth() {
+	public Double getWidth() {
 		return width;
 	}
 
-	public void setWidth(double width) {
+	public void setWidth(Double width) {
 		this.width = width;
 	}
 
-	public double getHeight() {
+	public Double getHeight() {
 		return height;
 	}
 
-	public void setHeight(double height) {
+	public void setHeight(Double height) {
 		this.height = height;
 	}
 
