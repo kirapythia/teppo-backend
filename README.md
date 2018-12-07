@@ -80,8 +80,7 @@ To manually build and run [Dockerfile](Dockerfile), run:
 
 ```
 # Get the ECR specific docker login command so that you can pull Voltti images from ECR.
-# Remember to run the outputted command to log in to ECR.
-aws-voltti aws ecr get-login --registry-ids 307238562370
+$(aws --profile voltti-sst ecr get-login --no-include-email)
 
 # Build the development image
 docker build \

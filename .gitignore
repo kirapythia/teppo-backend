@@ -24,3 +24,6 @@ version.json
 *.dxf
 *.pdf
 *.svg
+
+#Misc
+supervisord.pid

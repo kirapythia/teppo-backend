@@ -1,0 +1,26 @@
+#Teppo Service's Dockerfile for dev, test, staging and prod environments
+
+#Voltti's OpenJDK base image
+ARG BASE_IMAGE=307238562370.dkr.ecr.eu-west-1.amazonaws.com/voltti/flyway
+ARG BASE_IMAGE_VERSION=latest
+
+FROM ${BASE_IMAGE}:${BASE_IMAGE_VERSION}
+
+ENV USERNAME voltti
+ENV SOURCE_DIR /usr/src/app
+
+WORKDIR ${SOURCE_DIR}
+
+#USER root
+
+USER ${USERNAME}
+
+COPY --chown=voltti:voltti entrypoint-dist.sh .
+COPY --chown=voltti:voltti build/libs/ .
+
+RUN chmod -R 755 *
+
+# Expose Spring Boot's embedded server
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/src/app/entrypoint-dist.sh"]
