@@ -192,7 +192,7 @@ public class Ptext implements Serializable {
 
 	public void setY(Double y) {
 		this.y = y;
-	}	
+	}
 
 	public Double getWidth() {
 		return width;
