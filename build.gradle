@@ -66,10 +66,12 @@ jar {
 
 // The config below corresponds to nuora-compose's db
 // see 'Overriding order' from https://flywaydb.org/documentation/gradle
-def dbName = 'teppo'
-if (System.env.SPRING_PROFILES_ACTIVE == 'env_local_test') {
-    dbName = 'teppo_test'
-}
+//def dbName = 'teppo'
+//if (System.env.SPRING_PROFILES_ACTIVE == 'env_local_test') {
+//    dbName = 'teppo_test'
+//}
+
+/*
 flyway {
     url = 'jdbc:postgresql://localhost:5433/' + dbName
     user = 'tepposervice'
@@ -78,6 +80,7 @@ flyway {
         'application_user': 'tepposervice'
     ]
 }
+*/
 
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
