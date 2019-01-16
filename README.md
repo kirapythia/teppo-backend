@@ -95,3 +95,13 @@ docker run \
   --name teppo-service \
   teppo-service
 ```
+
+## Deploying to AWS
+
+This repository contains `deploy.sh` which can be used to deploy Teppo to AWS environments. It assumes that the user has `teppo-infra` in the parent folder and Terraform installed.
+
+### Deployment to dev environment
+
+Run `deploy.sh dev`.
+
+Deployment to other environments works by replacing `dev` with the correct environment name.
