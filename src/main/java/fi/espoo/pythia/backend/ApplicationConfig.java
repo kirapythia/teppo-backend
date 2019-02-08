@@ -58,13 +58,16 @@ public class ApplicationConfig {
 		String url = System.getenv("DB_URL");
 		// TODO: localhost is now used by default, use Voltti RDS by default when it is available
 		// if (runningEnvironment != null && runningEnvironment.equals("local")) {
-		if (runningEnvironment == null || runningEnvironment.equals("local") || runningEnvironment.equals("local-dbdocker")) {
+		if (runningEnvironment == null || runningEnvironment.equals("local")) {
 			url = "jdbc:postgresql://localhost";
 		}
-		String port = "5432";
-		if (runningEnvironment != null && runningEnvironment.equals("local-dbdocker")) {
-			port = "5433";
+		else if (runningEnvironment.equals("local-dbdocker")) {
+			url = "jdbc:postgresql://teppo-service-db";
 		}
+		String port = "5432";
+//		if (runningEnvironment != null && runningEnvironment.equals("local-dbdocker")) {
+//			port = "5433";
+//		}
 		String dbUrl = url + ":" + port + "/teppo";
 //		String dataSourceUrl = System.getenv("SPRING_DATASOURCE_URL");
 //		if (dataSourceUrl != null) {
@@ -72,6 +75,7 @@ public class ApplicationConfig {
 //		}
 		String dbuser = System.getenv("DB_USER");
 		String dbpwd = System.getenv("DB_USER_PWD");
+
 		DataSource dataSource = DataSourceBuilder.create().url(dbUrl)
 				.driverClassName("org.postgresql.Driver").username(dbuser).password(dbpwd).build();
 
@@ -93,6 +97,7 @@ public class ApplicationConfig {
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(Environment env) {
+
 
 		LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 		entityManagerFactoryBean.setDataSource(dataSource());

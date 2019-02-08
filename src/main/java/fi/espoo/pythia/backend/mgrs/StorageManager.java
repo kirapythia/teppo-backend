@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.attribute.UserPrincipal;
-import java.sql.Time;
+// import java.sql.Time;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,7 +50,7 @@ import fi.espoo.pythia.backend.transfer.ProjectUpdateValue;
 import fi.espoo.pythia.backend.transfer.ProjectValue2;
 import fi.espoo.pythia.backend.transfer.PtextValue;
 import fi.espoo.pythia.backend.validators.PlanValidator;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
+// import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Component
 @Transactional
